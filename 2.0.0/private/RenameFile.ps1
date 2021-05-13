@@ -16,7 +16,7 @@ Function RenameFile {
       Required. The extension of the file
   #>
 
-  [CmdLetBindng(DefaultParameterSetName)]
+  [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory=$true)]
     [String]$Path,
