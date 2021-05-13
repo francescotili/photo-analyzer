@@ -27,29 +27,29 @@ Function Get-ExifInfo {
 
   switch ($InfoType) {
     'FileType' {
-      $Response = .\exiftool.exe -FileType $File
+      $Response = exiftool -FileType $File
       return $Response.split(":")[1].Trim()
     }
     'DateCreated' {      
-      $FileType = .\exiftool.exe -FileType $File
+      $FileType = exiftool -FileType $File
       [String]$Extension = $FileType.split(":")[1].Trim()
       [String]$TagType = "NormalTag"
 
       switch ($Extension) {
         { @("PNG") -contains $_ } {
-          $Response = .\exiftool.exe -CreationTime $File
+          $Response = exiftool -CreationTime $File
         }
         { @("MP4") -contains $_ } {
-          $Response = .\exiftool.exe -CreateDate $File
-          # $Response = .\exiftool.exe -DateTimeOriginal $File
+          $Response = exiftool -CreateDate $File
+          # $Response = exiftool -DateTimeOriginal $File
         }
         { @("MOV") -contains $_ } {
-          $Response = .\exiftool.exe -CreationDate $File
+          $Response = exiftool -CreationDate $File
           $TagType = "UTCTag"
-          # $Response = .\exiftool.exe -CreateDate $File
+          # $Response = exiftool -CreateDate $File
         }
         { @("JPEG", "HEIC", "GIF") -contains $_ } {
-          $Response = .\exiftool.exe -DateTimeOriginal $File
+          $Response = exiftool -DateTimeOriginal $File
         }
         Default {
           Write-Error -Message "File type not supported" -ErrorAction Continue
@@ -71,7 +71,7 @@ Function Get-ExifInfo {
     }
     'FileModifyDate' {
       # PNG, MOV, MP4, JPG
-      $Response = .\exiftool.exe -FileModifyDate $File
+      $Response = exiftool -FileModifyDate $File
       
       # Parse data and return value
       return ParseDateTime $Response "UTCTag"
