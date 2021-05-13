@@ -49,7 +49,7 @@ Function ParseDateTime {
       $Seconds = $Tag.split(":")[4].trim()
     }
     Default {
-      Write-Error -Message "Error in ParseData function, wrong type of Tag specified" -ErrorAction Continue
+      Write-Error -Message "Wrong type of Tag specified" -ErrorAction Continue
       Break
     }
   }

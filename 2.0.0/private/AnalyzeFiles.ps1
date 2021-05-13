@@ -103,7 +103,7 @@ Function AnalyzeFiles {
                     $UserData = Read-Host "Insert date (YYYY:MM:DD hh:mm:ss)"
                     if ( IsValidDate $UserData ) { # Valid date
                       # Parse customData
-                      $Parsed = ParseData $UserData "CustomDate"
+                      $Parsed = ParseDateTime $UserData "CustomDate"
   
                       # Update metadatas
                       Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
@@ -135,7 +135,7 @@ Function AnalyzeFiles {
             $UserData = Read-Host " >> Please enter a new date (YYYY:MM:DD hh:mm:ss)"
             if ( IsValidDate $UserData ) { # Valid date
               # Parse customData
-              $Parsed = ParseData $UserData "CustomDate"
+              $Parsed = ParseDateTime $UserData "CustomDate"
 
               # Update metadatas
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
