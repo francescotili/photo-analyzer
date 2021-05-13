@@ -45,8 +45,8 @@ Function Write-ExifInfo {
       .\exiftool.exe -DateTimeOriginal="$Date" -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" $File
     }
     Default {
-      Write-Error -Message "Invalid extension specified"
-      exit
+      Write-Error -Message "Invalid extension specified" -ErrorAction Continue
+      Break
     }
   }
 }

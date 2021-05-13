@@ -34,12 +34,15 @@ Function CleanBackups {
           $WorkingPath = $WorkingFolder
         } else { # No passed path and no global specified, ask the user
           $UserPath = Read-Host " >> Specify path to clean:"
-          $UserPath = $UserPath -replace '["]',''
-          if (Test-Path -Path "$UserPath") {
-            $WorkingPath = $UserPath
+          if ($UserPath -ne "" ) {
+            $UserPath = $UserPath -replace '["]',''
+            if (Test-Path -Path "$UserPath") {
+              $WorkingPath = $UserPath
+            } else {
+              Write-Error -Message "Unvalid path! Exiting..." -ErrorAction Stop
+            }
           } else {
-            Write-Host "Unvalid path! Exiting..."
-            exit
+            Write-Error -Message "No path specified!" -ErrorAction Stop
           }
         }
       }
@@ -104,15 +107,14 @@ Function CleanBackups {
         }
         Write-Host ""
         Write-Host " >> >> Cleaning complete!"
-        exit
+        Read-Host "Press Enter to exit"
       } else {
         Write-Host " >> >> No temporary files found!"
-        exit
+        Read-Host "Press Enter to exit"
       }
     }
     Default { # User doesn't want to cleanup
-      Write-Host "Ok, exiting..."
-      exit
+      Read-Host -Prompt "Press Enter to exit"
     }
   }
 }

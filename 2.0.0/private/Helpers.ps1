@@ -9,15 +9,13 @@ function Set-Path {
   if ($Path) { # Path has been specified
     $WorkingPath = $path -replace '["]',''    
     if (-Not(Test-Path -Path "$WorkingPath")) { # Path not valid
-      Write-Host "Unvalid path! Exiting..."
-      exit
+      Write-Error -Message "Specified path is not valid! Exiting..." -ErrorAction Stop
     } else { # Valid path
       Set-Variable -Name WorkingFolder -Value $WorkingPath -Scope Global
       return $WorkingPath
     }
   } else { # No path specified
-    Write-Host "You have not specified a path. Exiting..."
-    exit
+    Write-Error -Message "You have not specified a path. Exiting..." -ErrorAction Stop
   }
 }
 
@@ -46,8 +44,7 @@ function Set-Mode {
       Set-Variable -Name ScriptMode -Value "Manual" -Scope Global
     }
     Default {
-      Write-Host "Invalid choice!"
-      exit
+      Write-Error -Message "Invalid choice" -ErrorAction Stop
     }
   }
 }
@@ -134,8 +131,7 @@ function ActionRouter {
       CleanBackups
     }
     Default { # Invalid choice
-      Write-Host "Invalid choice - exiting..."
-      exit
+      Write-Error -Message "Invalid choice!" -ErrorAction Stop
     }
   }
 }

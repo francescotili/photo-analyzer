@@ -52,8 +52,8 @@ Function Get-ExifInfo {
           $Response = .\exiftool.exe -DateTimeOriginal $File
         }
         Default {
-          Write-Error "File type not supported"
-          exit
+          Write-Error -Message "File type not supported" -ErrorAction Continue
+          Break
         }
       }
 
@@ -77,8 +77,8 @@ Function Get-ExifInfo {
       return ParseDateTime $Response "UTCTag"
     }
     Default {
-      Write-Error -Message "Invalid InfoType specified"
-      exit
+      Write-Error -Message "Invalid InfoType specified" -ErrorAction Continue
+      Break
     }
   }
 }

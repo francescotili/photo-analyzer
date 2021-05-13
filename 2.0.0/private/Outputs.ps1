@@ -55,8 +55,7 @@ function OutputScriptFooter {
         CleanBackups
        }
       Default { # User doesn't want to delete backup files
-        Write-Host "Ok, exiting..."
-        exit
+       Read-Host "Press enter to exit"
       }    
     }
   }

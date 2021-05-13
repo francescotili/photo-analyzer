@@ -166,8 +166,8 @@ Function AnalyzeFiles {
           'heic' { $FinalExtension = "jpg" }
           'mov' { $FinalExtension = "mp4" }
           Default {
-            Write-Error -Message "Unhandled exception occurred"
-            exit
+            Write-Error -Message "Unhandled exception occurred" -ErrorAction Continue
+            Break
           }
         }
 
