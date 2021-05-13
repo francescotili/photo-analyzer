@@ -37,7 +37,7 @@ Function RenameFile {
   [String]$OldFile = "$($Path)\$($OldName).$($Extension)"
   [String]$TempName = "temp_file.bak"
   [String]$TempFile = "$($Path)\$($TempName)"
-  [String]$NewFile = "$($NewName)+$($CopyNum).$($Extension)"
+  [String]$FinalName = "$($NewName)+$($CopyNum).$($Extension)"
 
   # Temporary renaming of the file to avoid conflict with itself
   Rename-Item -Path $OldFile -NewName $TempName
