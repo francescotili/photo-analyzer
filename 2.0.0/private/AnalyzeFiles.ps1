@@ -63,19 +63,25 @@ Function AnalyzeFiles {
 
             # Gettin the new manual date
             $UserData = Read-Host " >> Please enter a new date (YYYY:MM:DD hh:mm:ss)"
-            if ( IsValidDate $UserData ) { # Valid date
-              # Parse customData
-              $Parsed = ParseDateTime $UserData "CustomDate"
+            if ( $userData -ne "" ) {
+              if ( IsValidDate $UserData ) { # Valid date
+                # Parse customData
+                $Parsed = ParseDateTime $UserData "CustomDate"
 
-              # Update metadatas
-              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-              Write-ExifInfo $FilePath $Parsed.date $Extension
+                # Update metadatas
+                Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
+                Write-ExifInfo $FilePath $Parsed.date $Extension
 
-              # Rename item
-              RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
-              Write-Host ""
-            } else { # Invalid date
-              Write-Host "Invalid date!"
+                # Rename item
+                RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
+                Write-Host ""
+              } else { # Invalid date
+                Write-Host "Invalid date!"
+                Write-Host " >> File skipped"
+                Write-Host ""
+              }
+            } else { # No date specified
+              Write-Host "No date specified!"
               Write-Host " >> File skipped"
               Write-Host ""
             }
@@ -101,19 +107,25 @@ Function AnalyzeFiles {
                   'y' { # User will specify a new date
                     Write-Host ""
                     $UserData = Read-Host "Insert date (YYYY:MM:DD hh:mm:ss)"
-                    if ( IsValidDate $UserData ) { # Valid date
-                      # Parse customData
-                      $Parsed = ParseDateTime $UserData "CustomDate"
-  
-                      # Update metadatas
-                      Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-                      Write-ExifInfo $FilePath $Parsed.date $Extension
-  
-                      # Rename item
-                      RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
-                      Write-Host ""
-                    } else { # Invalid date
-                      Write-Host "Invalid date!"
+                    if ( $userData -ne "" ) {
+                      if ( IsValidDate $UserData ) { # Valid date
+                        # Parse customData
+                        $Parsed = ParseDateTime $UserData "CustomDate"
+    
+                        # Update metadatas
+                        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
+                        Write-ExifInfo $FilePath $Parsed.date $Extension
+    
+                        # Rename item
+                        RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
+                        Write-Host ""
+                      } else { # Invalid date
+                        Write-Host "Invalid date!"
+                        Write-Host " >> File skipped"
+                        Write-Host ""
+                      }
+                    } else { # No date specified
+                      Write-Host "No date specified!"
                       Write-Host " >> File skipped"
                       Write-Host ""
                     }
@@ -133,19 +145,25 @@ Function AnalyzeFiles {
             Write-Host " >> Creation date is: $($Parsed.date)"
             Write-Host ""
             $UserData = Read-Host " >> Please enter a new date (YYYY:MM:DD hh:mm:ss)"
-            if ( IsValidDate $UserData ) { # Valid date
-              # Parse customData
-              $Parsed = ParseDateTime $UserData "CustomDate"
+            if ( $userData -ne "" ) {
+              if ( IsValidDate $UserData ) { # Valid date
+                # Parse customData
+                $Parsed = ParseDateTime $UserData "CustomDate"
 
-              # Update metadatas
-              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-              Write-ExifInfo $FilePath $Parsed.date $Extension
+                # Update metadatas
+                Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
+                Write-ExifInfo $FilePath $Parsed.date $Extension
 
-              # Rename item
-              RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
-            } else { # Invalid date
-              Write-Host "Invalid date!"
+                # Rename item
+                RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
+              } else { # Invalid date
+                Write-Host "Invalid date!"
+                Write-Host " >> File skipped"
+              }
+            } else { # No date specified
+              Write-Host "No date specified!"
               Write-Host " >> File skipped"
+              Write-Host ""
             }
           } else { # Automatic update
             # Update all dates in the metadata
