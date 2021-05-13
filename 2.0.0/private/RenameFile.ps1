@@ -25,7 +25,10 @@ Function RenameFile {
     [String]$OldName,
 
     [Parameter(Mandatory=$true)]
-    [String]$NewName
+    [String]$NewName,
+
+    [Parameter(Mandatory=$true)]
+    [String]$Extension
   )
 
   [Int]$i = 0
