@@ -45,7 +45,7 @@ Function RenameFile {
 
   while (Test-Path -path $NewFile) {
     # New fileName already exist, increment CopyNum
-    $i = += 1
+    $i += 1
     $CopyNum = '{0:d3}' -f $i
     $NewFile = "$($Path)\$($NewName)+$($CopyNum).$($Extension)"
     $FinalName = "$($NewName)+$($CopyNum).$($Extension)"
