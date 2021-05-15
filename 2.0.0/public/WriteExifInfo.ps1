@@ -36,7 +36,7 @@ Function Write-ExifInfo {
       exiftool -CreateDate="$Date" -ModifyDate="$Date" -TrackCreateDate="$Date" -FileModifyDate="$Date" -TrackModifyDate="$Date" -MediaCreateDate="$Date" -MediaModifyDate="$Date" -CreationDate="$Date" $File
     }
     { @("MP4", "mp4") -contains $_ } {
-      exiftool -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" -TrackCreateDate="$Date" -TrackModifyDate="$Date" -MediaCreateDate="$Date" -MediaModifyDate="$Date" -DateTimeOriginal="$Date" $File
+      exiftool -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" -TrackCreateDate="$Date" -TrackModifyDate="$Date" -MediaCreateDate="$Date" -MediaModifyDate="$Date" -DateTimeOriginal="$Date" -EXIF:CreateDate="$Date" $File
     }
     { @("PNG", "png") -contains $_ } {
       exiftool -AllDates="$Date" -CreationTime="$Date" $File

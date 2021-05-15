@@ -7,6 +7,7 @@ $global:ScriptMode = ""
 . $PSScriptRoot\private\CheckFileType.ps1
 . $PSScriptRoot\private\Helpers.ps1
 . $PSScriptRoot\private\IsValidDate.ps1
+. $PSScriptRoot\private\OffsetDateTime.ps1
 . $PSScriptRoot\private\Outputs.ps1
 . $PSScriptRoot\private\ParseDateTime.ps1
 . $PSScriptRoot\private\RenameFile.ps1

@@ -30,26 +30,27 @@ Function Get-ExifInfo {
       $Response = exiftool -FileType $File
       return $Response.split(":")[1].Trim()
     }
-    'DateCreated' {      
+    'DateCreated' {    
       $FileType = exiftool -FileType $File
       [String]$Extension = $FileType.split(":")[1].Trim()
-      [String]$TagType = "NormalTag"
 
       switch ($Extension) {
         { @("PNG") -contains $_ } {
           $Response = exiftool -CreationTime $File
+          $TagType = "NormalTag"
         }
         { @("MP4") -contains $_ } {
-          $Response = exiftool -CreateDate $File
-          # $Response = exiftool -DateTimeOriginal $File
+          # Canon use -EXIF:CreateDate as correct date and time
+          $Response = exiftool -EXIF:CreateDate $File
+          $TagType = "NormalTag"
         }
         { @("MOV") -contains $_ } {
           $Response = exiftool -CreationDate $File
           $TagType = "UTCTag"
-          # $Response = exiftool -CreateDate $File
         }
         { @("JPEG", "HEIC", "GIF") -contains $_ } {
           $Response = exiftool -DateTimeOriginal $File
+          $TagType = "NormalTag"
         }
         Default {
           Write-Error -Message "File type not supported" -ErrorAction Continue
@@ -79,6 +80,37 @@ Function Get-ExifInfo {
     Default {
       Write-Error -Message "Invalid InfoType specified" -ErrorAction Continue
       Break
+    }
+    'DateCreatedAlt' {    
+      $FileType = exiftool -FileType $File
+      [String]$Extension = $FileType.split(":")[1].Trim()
+
+      switch ($Extension) {
+        { @("MP4") -contains $_ } {
+          $Response = exiftool -CreateDate $File
+          $TagType = "NormalTag"
+        }
+        { @("JPEG", "HEIC", "GIF", "PNG", "MOV") -contains $_ } {
+          $Response = ""
+          $TagType = "NormalTag"
+        }
+        Default {
+          Write-Error -Message "File type not supported" -ErrorAction Continue
+          Break
+        }
+      }
+
+      # Parse data and return value
+      if(( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) { # Tag exists
+        $Parsed = ParseDateTime $Response $TagType
+        if( IsValidDate $Parsed.date ) {
+          return $Parsed
+        } else {
+          return ""
+        }        
+      } else {
+        return ""
+      }
     }
   }
 }

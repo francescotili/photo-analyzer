@@ -88,53 +88,79 @@ Function AnalyzeFiles {
           } else { # Automatic update
             Write-Host " >> Creation date not detected! Reading modify date..."
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading modify date ..." -Status "$Status%"
-            $Parsed = Get-ExifInfo $FilePath "FileModifyDate"
-            Write-Host " >> Detected date: $($Parsed.date)"
-            $UserSelection = Read-Host " >> >> Would you like to use this date? Y/N"
+            $FileModifyDate = Get-ExifInfo $FilePath "FileModifyDate"
+            Write-Host " >> Detected File Modify Date/Time: $($FileModifyDate.date)$($FileModifyDate.utcoffset)"
+            $FileCreateDateAlt = Get-ExifInfo $FilePath "DateCreatedAlt"
+            Write-Host " >> Alternative Creation Date/Time: $($FileCreateDateAlt.date)"
+
+            Write-Host ""
+            Write-Host " >> >> What date would you like to use?"
+            Write-Host "     1 | File Modify Date/Time"
+            Write-Host "     2 | Alternative Creation Date/Time"
+            Write-Host "     3 | Offset alternative Creation Date/Time with UTC from Modify Date/Time"
+            Write-Host "     4 | Manually insert date"
+            $UserSelection = Read-Host " >> >> Insert number"
             switch ($UserSelection) {
-              'y' { # User would like to use ModifyDate
+              '1' { # User would like to use ModifyDate
                 # Update all dates in the metadata
                 Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
+                Write-ExifInfo $FilePath $FileModifyDate.date $Extension
+
+                # Rename item
+                RenameFile $WorkingFolder $FileName $FileModifyDate.fileName $Extension
+                Write-Host ""
+              }
+              '2' { # User would like to use CreateDate alternative
+                # Update all dates in the metadata
+                Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
+                Write-ExifInfo $FilePath $FileCreateDateAlt.date $Extension
+
+                # Rename item
+                RenameFile $WorkingFolder $FileName $FileCreateDateAlt.fileName $Extension
+                Write-Host ""
+              }
+              '3' { # User would like to use CreateDate but with offset
+                # Calculate new date
+                $NewDate = OffsetDateTime $FileCreateDateAlt.date $FileModifyDate.utcoffset
+                $Parsed = ParseDateTime $NewDate "CustomDate"
+
+                #Update all dates in the metadata
+                Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
                 Write-ExifInfo $FilePath $Parsed.date $Extension
-    
+
                 # Rename item
                 RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
                 Write-Host ""
               }
-              Default {  # User doesn't want to use ModifyDate
-                $UserManualData = Read-Host "Got it, would you like to specify a custom date to apply? y/n"
-                switch ($UserManualData) {
-                  'y' { # User will specify a new date
+              '4' { # User wants to specify a custom date
+                $UserData = Read-Host " >> >> Insert date (YYYY:MM:DD hh:mm:ss)"
+                if ( $userData -ne "" ) {
+                  if ( IsValidDate $UserData ) { # Valid date
+                    # Parse customData
+                    $Parsed = ParseDateTime $UserData "CustomDate"
+
+                    # Update metadatas
+                    Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
+                    Write-ExifInfo $FilePath $Parsed.date $Extension
+
+                    # Rename item
+                    RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
                     Write-Host ""
-                    $UserData = Read-Host "Insert date (YYYY:MM:DD hh:mm:ss)"
-                    if ( $userData -ne "" ) {
-                      if ( IsValidDate $UserData ) { # Valid date
-                        # Parse customData
-                        $Parsed = ParseDateTime $UserData "CustomDate"
-    
-                        # Update metadatas
-                        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-                        Write-ExifInfo $FilePath $Parsed.date $Extension
-    
-                        # Rename item
-                        RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
-                        Write-Host ""
-                      } else { # Invalid date
-                        Write-Host "Invalid date!"
-                        Write-Host " >> File skipped"
-                        Write-Host ""
-                      }
-                    } else { # No date specified
-                      Write-Host "No date specified!"
-                      Write-Host " >> File skipped"
-                      Write-Host ""
-                    }
-                  }
-                  Default { # No user-specified date
+                  } else { # Invalid date
+                    Write-Host "Invalid date!"
                     Write-Host " >> File skipped"
                     Write-Host ""
                   }
+                } else { # No date specified
+                  Write-Host "No date specified!"
+                  Write-Host " >> File skipped"
+                  Write-Host ""
                 }
+              }
+              Default { # Invalid choice
+                Write-Host "Invalid choice!"
+                Write-Host " >> File skipped"
+                Write-Host ""
               }
             }
           }          

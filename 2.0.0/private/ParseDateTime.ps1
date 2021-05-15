@@ -31,6 +31,7 @@ Function ParseDateTime {
       $Hour    = $Tag.split(":")[3].split(" ")[1].trim()
       $Minutes = $Tag.split(":")[4].trim()
       $Seconds = $Tag.split(":")[5].trim()
+      $UTCOffset = ""
     }
     'UTCTag' {
       $Year    = $Tag.split(":")[1].trim()
@@ -39,6 +40,7 @@ Function ParseDateTime {
       $Hour    = $Tag.split(":")[3].split(" ")[1].trim()
       $Minutes = $Tag.split(":")[4].trim()
       $Seconds = $Tag.split(":")[5].trim().split("+")[0].trim()
+      $UTCOffset = "$($Tag.split(":")[5].Substring(2)):$($Tag.split(":")[6])"
     }
     'CustomDate' {
       $Year    = $Tag.split(":")[0].trim()
@@ -47,6 +49,7 @@ Function ParseDateTime {
       $Hour    = $Tag.split(":")[2].split(" ")[1].trim()
       $Minutes = $Tag.split(":")[3].trim()
       $Seconds = $Tag.split(":")[4].trim()
+      $UTCOffset = ""
     }
     Default {
       Write-Error -Message "Wrong type of Tag specified" -ErrorAction Continue
@@ -54,8 +57,9 @@ Function ParseDateTime {
     }
   }
 
-  $ReturnValue = "" | Select-Object -Property fileName, date
+  $ReturnValue = "" | Select-Object -Property fileName, date, utcoffset
   $ReturnValue.fileName = "$Year$Month$Day $Hour$Minutes$Seconds"
   $ReturnValue.date = "${Year}:${Month}:${Day} ${Hour}:${Minutes}:${Seconds}"
+  $ReturnValue.utcoffset = $UTCOffset
   return $ReturnValue
 }
