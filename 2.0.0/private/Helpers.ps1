@@ -126,7 +126,7 @@ function ActionRouter {
       AnalyzeFiles "gif"
       OutputScriptFooter
     }
-    '8' { # Only cleanup file backups
+    '9' { # Only cleanup file backups
       Clear-Host
       CleanBackups
     }
