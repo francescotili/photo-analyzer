@@ -93,6 +93,7 @@ Function AnalyzeFiles {
             $FileCreateDateAlt = Get-ExifInfo $FilePath "DateCreatedAlt"
             Write-Host " >> Alternative Creation Date/Time: $($FileCreateDateAlt.date)"
 
+            (New-Object System.Media.SoundPlayer "$env:windir\Media\Windows Unlock.wav").Play()
             Write-Host ""
             Write-Host " >> >> What date would you like to use?"
             Write-Host "     1 | File Modify Date/Time"

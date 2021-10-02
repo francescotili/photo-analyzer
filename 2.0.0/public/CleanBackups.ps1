@@ -107,6 +107,7 @@ Function CleanBackups {
         }
         Write-Host ""
         Write-Host " >> >> Cleaning complete!"
+        (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
         Read-Host "Press Enter to exit"
       } else {
         Write-Host " >> >> No temporary files found!"

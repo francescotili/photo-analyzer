@@ -44,6 +44,7 @@ function OutputWorkingPath {
 }
 
 function OutputScriptFooter {
+  (New-Object System.Media.SoundPlayer "$env:windir\Media\Windows Unlock.wav").Play()
   Write-Host ""
   Write-Host "=============================================="
   Write-Host "Operation completed"
@@ -55,6 +56,7 @@ function OutputScriptFooter {
         CleanBackups
        }
       Default { # User doesn't want to delete backup files
+      (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
        Read-Host "Press enter to exit"
       }    
     }
