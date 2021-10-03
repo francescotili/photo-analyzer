@@ -57,6 +57,12 @@ Function CheckFileType {
         Default { return "" }
       }
     }
+    'm4v' {
+      switch ($FileType) {
+        'MP4'   { return "Rename" }
+        Default { return "" }
+      }
+    }
     'mp4' {
       switch ($FileType) {
         'MP4'   { return "IsValid" }

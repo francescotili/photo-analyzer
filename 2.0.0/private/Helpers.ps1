@@ -64,9 +64,10 @@ function ActionRouter {
   Write-Host "4 - Analize and rename JPG files"
   Write-Host "5 - Analize and rename MP4 files"
   Write-Host "6 - Analize and rename MOV files"
-  Write-Host "7 - Analize and rename PNG files"
-  Write-Host "8 - Analize and rename GIF files"
-  Write-Host "9 - Cleanup backup files"
+  Write-Host "7 - Analize and rename M4V files"
+  Write-Host "8 - Analize and rename PNG files"
+  Write-Host "9 - Analize and rename GIF files"
+  Write-Host "10- Cleanup backup files"
   Write-Host "=============================================="
   Write-Host ""
   $userSelection = Read-Host "Insert number"
@@ -80,6 +81,7 @@ function ActionRouter {
       AnalyzeFiles "jpg"
       AnalyzeFiles "png"
       AnalyzeFiles "mov"
+      AnalyzeFiles "m4v"
       AnalyzeFiles "mp4"
       AnalyzeFiles "gif"
       OutputScriptFooter
@@ -114,19 +116,25 @@ function ActionRouter {
       AnalyzeFiles "mov"
       OutputScriptFooter
     }
-    '7' { # PNG Files
+    '7' { # M4V Files
+      Clear-Host
+      OutputSpacer
+      AnalyzeFiles "m4v"
+      OutputScriptFooter
+    }
+    '8' { # PNG Files
       Clear-Host
       OutputSpacer
       AnalyzeFiles "png"
       OutputScriptFooter
     }
-    '8' { # GIF Files
+    '9' { # GIF Files
       Clear-Host
       OutputSpacer
       AnalyzeFiles "gif"
       OutputScriptFooter
     }
-    '9' { # Only cleanup file backups
+    '10' { # Only cleanup file backups
       Clear-Host
       CleanBackups
     }

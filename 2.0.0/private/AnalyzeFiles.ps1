@@ -10,8 +10,9 @@ Function AnalyzeFiles {
       3. JPG
       4. PNG
       5. MOV
-      6. MP4
-      7. GIF
+      6. M4V
+      7. MP4
+      8. GIF
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
@@ -210,6 +211,7 @@ Function AnalyzeFiles {
           'jpeg' { $FinalExtension = "jpg" }
           'heic' { $FinalExtension = "jpg" }
           'mov' { $FinalExtension = "mp4" }
+          'm4v' { $FinalExtension = "mp4" }
           Default {
             Write-Error -Message "Unhandled exception occurred" -ErrorAction Continue
             Break
