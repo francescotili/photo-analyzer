@@ -5,16 +5,7 @@ Function OutputScriptHeader {
 }
 
 function OutputSpacer {
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
-  Write-Host ""
+  for ($i=0; $i -le 10; $i++) { Write-Host "" }
 }
 
 function OutputModeStatus {
