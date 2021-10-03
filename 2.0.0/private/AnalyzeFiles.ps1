@@ -100,7 +100,8 @@ Function AnalyzeFiles {
             Write-Host "     1 | File Modify Date/Time"
             Write-Host "     2 | Alternative Creation Date/Time"
             Write-Host "     3 | Offset alternative Creation Date/Time with UTC from Modify Date/Time"
-            Write-Host "     4 | Manually insert date"
+            Write-Host "     4 | Try to parse Date/Time from FileName (beta)"
+            Write-Host "     5 | Manually insert date"
             $UserSelection = Read-Host " >> >> Insert number"
             switch ($UserSelection) {
               '1' { # User would like to use ModifyDate
@@ -134,7 +135,33 @@ Function AnalyzeFiles {
                 RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
                 Write-Host ""
               }
-              '4' { # User wants to specify a custom date
+              '4' { # Try to parse Date/Time from FileName
+                # Check if filename is parsable
+                if ( $FileName -match "(19|20\d{2})(?:[_.-])?(0[1-9]|1[0-2])(?:[_.-])?([0-2]\d|3[0-1]).*([0-1][0-9]|2[0-3])(?:[_.-])?([0-5][0-9])(?:[_.-])?([0-5][0-9])" ) { # We have a match
+                  $parsedDateTime = ParseFilename $FileName
+                  if ( IsValidDate $parsedDateTime ) { # Valid parsed date
+                    # Parse parsedData
+                    $Parsed = ParseDateTime $parsedDateTime "CustomDate"
+
+                    #Update metadatas
+                    Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
+                    Write-ExifInfo $FilePath $Parsed.date $Extension
+
+                    # Rename item
+                    RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
+                    Write-Host ""
+                  } else { # Parsed date is invalid
+                    Write-Host "Parsing unsuccessfull! Invalid date parsed..."
+                    Write-Host " >> File skipped"
+                    Write-Host ""
+                  }
+                } else { # No parsing possibile
+                  Write-Host "Parsing unsuccessful! No match..."
+                  Write-Host " >> File skipped"
+                  Write-Host ""
+                }
+              }
+              '5' { # User wants to specify a custom date
                 $UserData = Read-Host " >> >> Insert date (YYYY:MM:DD hh:mm:ss)"
                 if ( $userData -ne "" ) {
                   if ( IsValidDate $UserData ) { # Valid date
