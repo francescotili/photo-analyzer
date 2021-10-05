@@ -12,6 +12,7 @@ $global:ScriptMode = ""
 . $PSScriptRoot\private\ParseDateTime.ps1
 . $PSScriptRoot\private\RenameFile.ps1
 . $PSScriptRoot\private\ParseFilename.ps1
+. $PSScriptRoot\private\GetFilename.ps1
 
 # PUBLIC FUNCTIONS
 . $PSScriptRoot\public\CleanBackups.ps1

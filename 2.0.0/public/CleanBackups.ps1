@@ -77,7 +77,7 @@ Function CleanBackups {
   
           # Variables for the file
           $FilePath = $_.FullName
-          $FileName = $_.Name.split('\.')[-2]
+          $FileName = GetFilename($_.Name)
   
           # Deleting file
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Deleting $($FileName)" -Status "$Status%"

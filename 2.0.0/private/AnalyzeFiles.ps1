@@ -35,7 +35,7 @@ Function AnalyzeFiles {
 
     # Variables for the file
     $FilePath = $_.FullName
-    $FileName = $_.Name.split('\.')[-2]
+    $FileName = GetFilename($_.Name)
 
     # Analyze real file type
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing .$($Extension) files ..." -Status "$($Status)%"
