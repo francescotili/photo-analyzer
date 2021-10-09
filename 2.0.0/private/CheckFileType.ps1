@@ -22,59 +22,35 @@ Function CheckFileType {
     [String]$Extension
   )
 
-  $FileType = Get-ExifInfo $FilePath "FileType"
+  
+  $ReturnValue = "" | Select-Object -Property action, extension
 
-  switch ($Extension) {
-    'heic' {
-      switch ($FileType) {
-        'HEIC'  { return "IsValid" }
-        'JPEG'  { return "Rename" }
-        Default { return "" }
-      }
-    }
-    'jpeg' {
-      switch ($FileType) {
-        'JPEG'  { return "Rename" }
-        Default { return "" }
-      }
-    }
-    'jpg' {
-      switch ($FileType) {
-        'JPEG'  { return "IsValid" }
-        Default { return "" }
-      }
-    }
-    'png' {
-      switch ($FileType) {
-        'PNG'   { return "IsValid" }
-        Default { return ""}
-      }
-    }
-    'mov' {
-      switch ($FileType) {
-        'MOV'   { return "IsValid" }
-        'MP4'   { return "Rename" }
-        Default { return "" }
-      }
-    }
-    'm4v' {
-      switch ($FileType) {
-        'MP4'   { return "Rename" }
-        Default { return "" }
-      }
-    }
-    'mp4' {
-      switch ($FileType) {
-        'MP4'   { return "IsValid" }
-        Default { return "" }
-      }
-    }
-    'gif' {
-      switch ($FileType) {
-        'GIF'   { return "IsValid" }
-        Default { return ""}
-      }
-    }
-    Default { return "" }
+  # Define an array of supported extensions
+  $SupportedExtensions = @("jpg", "jpeg", "heic", "png", "gif", "mp4", "m4v", "mov", "gif")
+
+  # Define expected extensions based on detected file type
+  $extensions = @{
+    "JPEG" = "jpg"
+    "PNG" = "png"
+    "GIF" = "gif"
+    "MOV" = "mov"
+    "MP4" = "mp4"
+    "HEIC" = "heic"
   }
+
+  # Check if extension match and return value
+  if ($SupportedExtensions.Contains($Extension)) {
+    # Check if the extension is the expected based on the FileType
+    $FileType = Get-ExifInfo $FilePath "FileType"
+    if ($extensions[$FileType] -eq $Extension) {
+      $ReturnValue.action = "IsValid"
+    } else {
+      $ReturnValue.action = "Rename"
+      $ReturnValue.extension = $extensions[$FileType]
+    }
+  } else {
+    Write-Error -Message "Unhandled file extension" -ErrorAction Continue
+  }
+
+  return $ReturnValue
 }

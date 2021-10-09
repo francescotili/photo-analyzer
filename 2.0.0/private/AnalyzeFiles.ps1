@@ -41,7 +41,8 @@ Function AnalyzeFiles {
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing .$($Extension) files ..." -Status "$($Status)%"
     Write-Host $FilePath
 
-    switch (CheckFileType $FilePath $Extension) {
+    $fileTypeCheck = CheckFileType $FilePath $Extension
+    switch ( $fileTypeCheck.action ) {
       'IsValid'  { # File type and extension coincide
         Write-Host " >> Real .$($Extension) file detected"
 
@@ -251,29 +252,16 @@ Function AnalyzeFiles {
         }        
       }
       'Rename'   { # Change file extension
-        # Determine right extension
-        [string] $FinalExtension = ""
-        switch ($Extension) {
-          'jpeg' { $FinalExtension = "jpg" }
-          'heic' { $FinalExtension = "jpg" }
-          'mov' { $FinalExtension = "mp4" }
-          'm4v' { $FinalExtension = "mp4" }
-          Default {
-            Write-Error -Message "Unhandled exception occurred" -ErrorAction Continue
-            Break
-          }
-        }
-
         # Rename file changing extension
         if ( $ScriptMode -eq "Simulation" ) {
-          Write-Host " >> Not a real .$($Extension) file! Extension should be changed ..."
+          Write-Host " >> Not a real .$($Extension) file! Extension should be changed to .$($fileTypeCheck.extension) ..."
           Write-Host ""
         } elseif ( $ScriptMode -eq "Manual" ) {
           Write-Host " >> Not a real .$($Extension) file!"
           $UserSelection = Read-Host " >> Would you like to correct it? y/n"
           switch ($UserSelection) {
             'y' {
-              ChangeExtension $FilePath $FinalExtension
+              ChangeExtension $FilePath $fileTypeCheck.extension
             }
             Default {
               Write-Host " >> Skipping file ..."
@@ -282,12 +270,12 @@ Function AnalyzeFiles {
           }
         } else {
           Write-Host " >> Not a real .$($Extension) file ..."
-          ChangeExtension $FilePath $FinalExtension
+          ChangeExtension $FilePath $fileTypeCheck.extension
         }
       }
       Default    { # File type not handled or unexpected errors
         Write-Host "  >> Something strange with the file, please check manually"
-        Write-Error -Message "File type is $( Get-ExifInfo $FilePath "FileType" )"
+        Write-Error -Message "File type is $($fileTypeCheck.extension)"
         Write-Host ""
       }
     }
