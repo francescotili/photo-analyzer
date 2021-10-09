@@ -24,7 +24,7 @@ Function AnalyzeFiles {
   $i = 0
   $a = 0
   $Activity = "   ANALYSIS | .$($Extension) files"
-  $FileList = Get-ChildItem -Path $WorkingFolder -Filter "*.$($Extension)" -Recurse
+  $FileList = Get-ChildItem -Path $WorkingFolder -Filter "*.$($Extension)"
   $FileNumber = $FileList.Length
 
   $FileList | ForEach-Object {
