@@ -27,7 +27,8 @@ Function AutoAnalyzeFiles {
 
     # Variables for the file
     $FilePath = $_.FullName
-    $FileName = GetFilename($_.Name)
+    $GetFileName = GetFilename($_.Name)
+    $FileName = $GetFileName.fileName
 
     # Analyze real file type
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing .$($Extension) files ..." -Status "$($Status)%"

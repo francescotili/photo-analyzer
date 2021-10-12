@@ -4,7 +4,9 @@ Function GetFilename {
       Extract the filename removing the extension
     
     .EXAMPLE
-      $name = GetFilename($filename);
+      $response = GetFilename($filename);
+      $name = $response.name
+      $extension = $response.extension
     
     .PARAMETER File
       Required. The complete name of file with extension. Do not pass a relative or absolute path
@@ -20,6 +22,9 @@ Function GetFilename {
   # Match the file with pattern
   $regMatches = [regex]::Matches($file, $pattern)
 
-  # Return the filename
-  return $regMatches.Groups[1].Value
+  # Return the filename and extension
+  $ReturnValue = "" | Select-Object -Property fileName, extension
+  $ReturnValue.fileName = $regMatches.Groups[1].Value
+  $ReturnValue.extension = $regMatches.Groups[2].Value
+  return $ReturnValue
 }
