@@ -30,19 +30,19 @@ Function Write-ExifInfo {
 
   switch ($FileType) {
     { @("HEIC", "JPEG", "heic", "jpg") -contains $_ } {
-      exiftool -AllDates="$date" $File
+      exiftool -AllDates="$date" $File -F
     }
     { @("MOV", "mov") -contains $_ } {
-      exiftool -CreateDate="$Date" -ModifyDate="$Date" -TrackCreateDate="$Date" -FileModifyDate="$Date" -TrackModifyDate="$Date" -MediaCreateDate="$Date" -MediaModifyDate="$Date" -CreationDate="$Date" $File
+      exiftool -CreateDate="$Date" -ModifyDate="$Date" -TrackCreateDate="$Date" -FileModifyDate="$Date" -TrackModifyDate="$Date" -MediaCreateDate="$Date" -MediaModifyDate="$Date" -CreationDate="$Date" $File -F
     }
     { @("MP4", "mp4") -contains $_ } {
-      exiftool -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" -TrackCreateDate="$Date" -TrackModifyDate="$Date" -MediaCreateDate="$Date" -MediaModifyDate="$Date" -DateTimeOriginal="$Date" -EXIF:CreateDate="$Date" $File
+      exiftool -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" -TrackCreateDate="$Date" -TrackModifyDate="$Date" -MediaCreateDate="$Date" -MediaModifyDate="$Date" -DateTimeOriginal="$Date" -EXIF:CreateDate="$Date" $File -F
     }
     { @("PNG", "png") -contains $_ } {
-      exiftool -AllDates="$Date" -CreationTime="$Date" $File
+      exiftool -AllDates="$Date" -CreationTime="$Date" $File -F
     }
     { @("GIF", "gif") -contains $_ }{
-      exiftool -DateTimeOriginal="$Date" -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" $File
+      exiftool -DateTimeOriginal="$Date" -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" $File -F
     }
     Default {
       Write-Error -Message "Invalid extension specified" -ErrorAction Continue
