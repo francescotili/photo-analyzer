@@ -13,9 +13,9 @@ $global:ScriptMode = ""
 . $PSScriptRoot\private\RenameFile.ps1
 . $PSScriptRoot\private\ParseFilename.ps1
 . $PSScriptRoot\private\GetFilename.ps1
+. $PSScriptRoot\private\CleanBackups.ps1
+. $PSScriptRoot\private\GetExifInfo.ps1
+. $PSScriptRoot\private\WriteExifInfo.ps1
 
 # PUBLIC FUNCTIONS
-. $PSScriptRoot\public\CleanBackups.ps1
-. $PSScriptRoot\public\GetExifInfo.ps1
-. $PSScriptRoot\public\PhotoAnalyzer.ps1 # Main
-. $PSScriptRoot\public\WriteExifInfo.ps1
+. $PSScriptRoot\public\PhotoAnalyzer.ps1
