@@ -3,6 +3,7 @@ $global:ScriptMode = ""
 
 # PRIVATE FUNCTIONS
 . $PSScriptRoot\private\AnalyzeFiles.ps1
+. $PSScriptRoot\private\AutoAnalyzeFiles.ps1
 . $PSScriptRoot\private\ChangeExtension.ps1
 . $PSScriptRoot\private\CheckFileType.ps1
 . $PSScriptRoot\private\Helpers.ps1

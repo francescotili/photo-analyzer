@@ -1,5 +1,6 @@
 Function AutoPhoto {
   # Show script header
+  Clear-Host
   OutputScriptHeader
 
   # Set everything to be automatic
@@ -14,20 +15,21 @@ Function AutoPhoto {
   OutputScriptHeader
   OutputModeStatus
   OutputWorkingPath
+  Write-Host ""
   $userChoice = Read-Host " >> Do you want to continue? y/n"
 
   switch ($userChoice) {
     'y' { # Execute main actions
       Clear-Host
       OutputSpacer
-      AnalyzeFiles "heic"
-      AnalyzeFiles "jpeg"
-      AnalyzeFiles "jpg"
-      AnalyzeFiles "png"
-      AnalyzeFiles "mov"
-      AnalyzeFiles "m4v"
-      AnalyzeFiles "mp4"
-      AnalyzeFiles "gif"
+      AutoAnalyzeFiles "heic"
+      AutoAnalyzeFiles "jpeg"
+      AutoAnalyzeFiles "jpg"
+      AutoAnalyzeFiles "png"
+      AutoAnalyzeFiles "mov"
+      AutoAnalyzeFiles "m4v"
+      AutoAnalyzeFiles "mp4"
+      AutoAnalyzeFiles "gif"
       OutputScriptFooter
     }
     Default {
