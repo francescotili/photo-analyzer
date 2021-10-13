@@ -22,14 +22,7 @@ Function AutoPhoto {
     'y' { # Execute main actions
       Clear-Host
       OutputSpacer
-      AutoAnalyzeFiles "heic"
-      AutoAnalyzeFiles "jpeg"
-      AutoAnalyzeFiles "jpg"
-      AutoAnalyzeFiles "png"
-      AutoAnalyzeFiles "mov"
-      AutoAnalyzeFiles "m4v"
-      AutoAnalyzeFiles "mp4"
-      AutoAnalyzeFiles "gif"
+      AutoAnalyzeFiles
       OutputScriptFooter
     }
     Default {
