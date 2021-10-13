@@ -26,7 +26,7 @@ Function CheckFileType {
   $ReturnValue = "" | Select-Object -Property action, extension
 
   # Define an array of supported extensions
-  $SupportedExtensions = @("jpg", "jpeg", "heic", "png", "gif", "mp4", "m4v", "mov", "gif")
+  $SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "PNG", "gif", "GIF", "mp4", "MP4", "m4v", "M4V", "mov", "MOV", "gif", "GIF")
 
   # Define expected extensions based on detected file type
   $extensions = @{
@@ -42,14 +42,12 @@ Function CheckFileType {
   if ($SupportedExtensions.Contains($Extension)) {
     # Check if the extension is the expected based on the FileType
     $FileType = Get-ExifInfo $FilePath "FileType"
-    if ($extensions[$FileType] -eq $Extension) {
+    if ($extensions[$FileType] -ceq $Extension) {
       $ReturnValue.action = "IsValid"
     } else {
       $ReturnValue.action = "Rename"
       $ReturnValue.extension = $extensions[$FileType]
     }
-  } else {
-    Write-Error -Message "Unhandled file extension" -ErrorAction Continue
   }
 
   return $ReturnValue
