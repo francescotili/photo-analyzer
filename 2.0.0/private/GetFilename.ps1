@@ -25,6 +25,6 @@ Function GetFilename {
   # Return the filename and extension
   $ReturnValue = "" | Select-Object -Property fileName, extension
   $ReturnValue.fileName = $regMatches.Groups[1].Value
-  $ReturnValue.extension = $regMatches.Groups[2].Value
+  $ReturnValue.extension = ($regMatches.Groups[2].Value).replace('.','')
   return $ReturnValue
 }
