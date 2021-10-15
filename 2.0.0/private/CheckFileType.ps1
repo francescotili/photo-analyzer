@@ -19,7 +19,7 @@ Function CheckFileType {
   $ReturnValue = "" | Select-Object -Property action, extension
 
   # Define an array of supported extensions
-  $SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "PNG", "gif", "GIF", "mp4", "MP4", "m4v", "M4V", "mov", "MOV", "gif", "GIF")
+  $SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "PNG", "gif", "GIF", "mp4", "MP4", "m4v", "M4V", "mov", "MOV", "gif", "GIF", "avi", "AVI")
 
   # Define expected extensions based on detected file type
   $extensions = @{
@@ -31,12 +31,18 @@ Function CheckFileType {
     "HEIC" = "heic"
   }
 
+  # File Types that will be converted
+  $conversions = @("AVI")
+
   # Check if extension match and return value
   if ( $SupportedExtensions.Contains( $inputFile.extension ) ) {
     # Check if the extension is the expected based on the FileType
     $fileType = Get-ExifInfo $inputFile.fullFilePath "FileType"
     if ( $extensions[$fileType] -ceq $inputFile.extension ) {
       $ReturnValue.action = "IsValid"
+    }
+    elseif ( $conversions.Contains($fileType)) {
+      $ReturnValue.action = "Convert"
     }
     else {
       $ReturnValue.action = "Rename"

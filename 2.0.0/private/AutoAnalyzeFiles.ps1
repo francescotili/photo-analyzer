@@ -139,8 +139,11 @@ Function AutoAnalyzeFiles {
         Write-Host ""
       }
       'Convert' {
+        Write-Host " >> The file will be converted..."
+        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Converting file ..." -Status "$($Status)%"
+
         # Convert file
-        # Reanalyze
+        ConvertFile $currentFile
       }
       Default { # File probably not supported
         Write-Host " >> File extension not supported, skipping..."

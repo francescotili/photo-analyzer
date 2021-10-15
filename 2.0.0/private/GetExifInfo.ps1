@@ -48,7 +48,7 @@ Function Get-ExifInfo {
           $Response = exiftool -CreationDate $File
           $TagType = "UTCTag"
         }
-        { @("JPEG", "HEIC", "GIF") -contains $_ } {
+        { @("JPEG", "HEIC", "GIF", "AVI") -contains $_ } {
           $Response = exiftool -DateTimeOriginal $File
           $TagType = "NormalTag"
         }
