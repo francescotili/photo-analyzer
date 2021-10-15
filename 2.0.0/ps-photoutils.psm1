@@ -20,4 +20,4 @@ $global:ScriptMode = ""
 
 # PUBLIC FUNCTIONS
 . $PSScriptRoot\public\PhotoAnalyzer.ps1
-. $PSScriptRoot\public\AutoPhoto.ps1
+. $PSScriptRoot\public\PhotoAnalyzerAuto.ps1

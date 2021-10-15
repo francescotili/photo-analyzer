@@ -1,4 +1,4 @@
-Function AutoPhoto {
+Function PhotoAnalyzerAuto {
   # Show script header
   Clear-Host
   OutputScriptHeader
@@ -16,7 +16,7 @@ Function AutoPhoto {
   OutputModeStatus
   OutputWorkingPath
   Write-Host ""
-  $userChoice = Read-Host " >> Do you want to continue? y/n"
+  $userChoice = Read-Host ">> Do you want to continue? y/n"
 
   switch ($userChoice) {
     'y' { # Execute main actions
