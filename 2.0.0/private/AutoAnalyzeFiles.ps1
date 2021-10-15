@@ -26,7 +26,7 @@ Function AutoAnalyzeFiles {
 
     # Analyze real file type
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
-    Write-Host $currentFile.fullFilePath
+    Write-Host $currentFile.fullFilePath -Background Yellow -Foreground Black
 
     $fileTypeCheck = CheckFileType $currentFile
     switch ( $fileTypeCheck.action ) {
