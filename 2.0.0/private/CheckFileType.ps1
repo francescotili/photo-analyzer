@@ -6,22 +6,15 @@ Function CheckFileType {
       - 'Rename' -> Means that the extension doesn't match the fileType, so the file extension need to be changed before the analyzer can continue the operations
       - '' -> Means that something is strange with the file or the case is not handled
     
-    .PARAMETER FilePath
-      Required. The complete filepath to analyze
-    
-    .PARAMETER Extension
-      Required. The file actual extension against which the file will be analyzed
+    .PARAMETER inputFile
+      Required. A "FILE" object
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
-    [String]$FilePath,
-
-    [Parameter(Mandatory=$true)]
-    [String]$Extension
+    [Parameter(Mandatory = $true)]
+    $inputFile
   )
-
   
   $ReturnValue = "" | Select-Object -Property action, extension
 
@@ -31,22 +24,23 @@ Function CheckFileType {
   # Define expected extensions based on detected file type
   $extensions = @{
     "JPEG" = "jpg"
-    "PNG" = "png"
-    "GIF" = "gif"
-    "MOV" = "mov"
-    "MP4" = "mp4"
+    "PNG"  = "png"
+    "GIF"  = "gif"
+    "MOV"  = "mov"
+    "MP4"  = "mp4"
     "HEIC" = "heic"
   }
 
   # Check if extension match and return value
-  if ($SupportedExtensions.Contains($Extension)) {
+  if ( $SupportedExtensions.Contains( $inputFile.extension ) ) {
     # Check if the extension is the expected based on the FileType
-    $FileType = Get-ExifInfo $FilePath "FileType"
-    if ($extensions[$FileType] -ceq $Extension) {
+    $fileType = Get-ExifInfo $inputFile.fullFilePath "FileType"
+    if ( $extensions[$fileType] -ceq $inputFile.extension ) {
       $ReturnValue.action = "IsValid"
-    } else {
+    }
+    else {
       $ReturnValue.action = "Rename"
-      $ReturnValue.extension = $extensions[$FileType]
+      $ReturnValue.extension = $extensions[$fileType]
     }
   }
 

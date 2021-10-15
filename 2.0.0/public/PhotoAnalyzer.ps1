@@ -1,7 +1,9 @@
 Function PhotoAnalyzer {
   # Show script header
   Clear-Host
-  OutputScriptHeader
+  Write-Host "WARNING! This function is deprecated"
+  Write-Host "Use PhotoAnalyzerAuto instead"
+  <# OutputScriptHeader
 
   # Ask for script mode
   Set-Mode
@@ -21,5 +23,5 @@ Function PhotoAnalyzer {
   OutputWorkingPath
 
   # Ask main action
-  ActionRouter
+  ActionRouter #>
 }

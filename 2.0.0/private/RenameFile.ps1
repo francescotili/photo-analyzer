@@ -3,42 +3,31 @@ Function RenameFile {
     .SYNOPSIS
       Rename the specified file adding a number like +000 for conflicts
 
-    .PARAMETER Path
-      Required. The complete path of the file to rename, without file name.
-    
-    .PARAMETER OldName
-      Required. The old name of the file to rename (not the path!)
+    .PARAMETER inputFile
+      Required. The file object to rename
     
     .PARAMETER NewName
       Required. The new name to assign to the file (without extension)
-    
-    .PARAMETER Extension
-      Required. The extension of the file
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory=$true)]
-    [String]$Path,
+    $inputFile,
 
     [Parameter(Mandatory=$true)]
-    [String]$OldName,
-
-    [Parameter(Mandatory=$true)]
-    [String]$NewName,
-
-    [Parameter(Mandatory=$true)]
-    [String]$Extension
+    [String]$NewName
   )
 
   [Int]$i = 0
   [String]$CopyNum = '{0:d3}' -f $i
 
-  [String]$OldFile = "$($Path)\$($OldName).$($Extension)"
+  # Variables for the file
+  [String]$oldFile = $inputFile.fullFilePath
   [String]$TempName = "temp_file.bak"
-  [String]$TempFile = "$($Path)\$($TempName)"
-  [String]$NewFile = "${Path}\${NewName}+${CopyNum}.${Extension}"
-  [String]$FinalName = "${NewName}+${CopyNum}.${Extension}"
+  [String]$TempFile = "$($inputFile.path)\$($TempName)"
+  [String]$FinalName = "$($NewName)+$($CopyNum).$($inputFile.extension)"
+  [String]$NewFile = "$($inputFile.path)\$($FinalName)"
 
   # Temporary renaming of the file to avoid conflict with itself
   Rename-Item -Path $OldFile -NewName $TempName
@@ -47,8 +36,8 @@ Function RenameFile {
     # New fileName already exist, increment CopyNum
     $i += 1
     $CopyNum = '{0:d3}' -f $i
-    $NewFile = "$($Path)\$($NewName)+$($CopyNum).$($Extension)"
-    $FinalName = "$($NewName)+$($CopyNum).$($Extension)"
+    $FinalName = "$($NewName)+$($CopyNum).$($inputFile.extension)"
+    $NewFile = "$($inputFile.path)\$($FinalName)"
   }
 
   Rename-Item -Path $TempFile -NewName $FinalName

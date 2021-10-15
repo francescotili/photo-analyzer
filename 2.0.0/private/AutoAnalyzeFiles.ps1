@@ -17,52 +17,54 @@ Function AutoAnalyzeFiles {
     $Status = "{0:N0}" -f $a
 
     # Variables for the file
-    $FilePath = $_.FullName
-    $GetFileName = GetFilename($_.Name)
-    $FileName = $GetFileName.fileName
-    $Extension = $GetFileName.extension
+    $currentFile = "" | Select-Object -Property path, name, extension, fullFilePath
+    $currentFile.fullFilePath = $_.FullName
+    $currentFile.path = Split-Path -Path $currentFile.fullFilePath -Parent
+    $fileInfos = GetFilename( Split-Path -Path $currentFile.fullFilePath -Leaf )
+    $currentFile.name = $fileInfos.fileName
+    $currentFile.extension = $fileInfos.extension
 
     # Analyze real file type
-    Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($FileName) ..." -Status "$($Status)%"
-    Write-Host $FilePath
+    Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
+    Write-Host $currentFile.fullFilePath
 
-    $fileTypeCheck = CheckFileType $FilePath $Extension
+    $fileTypeCheck = CheckFileType $currentFile
     switch ( $fileTypeCheck.action ) {
       'IsValid' { # File type and extension coincide
-        Write-Host " >> Real .$($Extension) file detected"
+        Write-Host " >> Real .$($fileInfos.extension) file detected"
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-        $Parsed = Get-ExifInfo $FilePath "DateCreated"
+        $Parsed = Get-ExifInfo $currentFile.fullFilePath "DateCreated"
 
         if ( $Parsed -eq "") { # Creation date not detected
           Write-Host " >> Creation date not detected! Reading alternative dates..."
 
           # Parse date from filename
-          $parsedDateTime = ParseFilename $FileName
+          $parsedDateTime = ParseFilename $currentFile.name
           if ( $parsedDateTime -ne "" ) { # Valid parsed date
             # Parse parsedData
             $Parsed = ParseDateTime $parsedDateTime "CustomDate"
 
             # Update metadatas
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-            Write-ExifInfo $FilePath $Parsed.date $Extension
+            Write-ExifInfo $currentFile $Parsed.date
 
             # Rename item
-            RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
+            RenameFile $currentFile $Parsed.fileName
             Write-Host ""
           } else { # No parsing possible
             Write-Host " >> Parsing unsuccessfull (no match)! Trying other dates..."
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
-            $altWorkflow = AlternativeDatesWorkflow $FilePath
+            $altWorkflow = AlternativeDatesWorkflow $currentFile.fullFilePath
             if ( $altWorkflow.action -eq "SaveMetadata" ) { # Update all dates in the metadata
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-              Write-ExifInfo $FilePath $altWorkflow.date $Extension
+              Write-ExifInfo $currentFile $altWorkflow.date
 
               # Rename item
-              RenameFile $WorkingFolder $FileName $altWorkflow.filename $Extension
+              RenameFile $currentFile $altWorkflow.filename
             } else { # Invalid choice
               Write-Host " >> File skipped"
             }
@@ -70,52 +72,56 @@ Function AutoAnalyzeFiles {
         } else { # Creation date valid
           # Update all dates in the metadata
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-          Write-ExifInfo $FilePath $Parsed.date $Extension
+          Write-ExifInfo $currentFile $Parsed.date
 
           # Rename file
-          RenameFile $WorkingFolder $FileName $Parsed.fileName $Extension
+          RenameFile $currentFile $Parsed.fileName
         }
         Write-Host ""
       }
       'Rename'   { # Change file extension
         # Rename file changing extension
         Write-Host " >> Not a real .$($Extension) file ..."
-        ChangeExtension $FilePath $fileTypeCheck.extension
+        ChangeExtension $currentFile.fullFilePath $fileTypeCheck.extension
 
-        $newFilePath = "$($WorkingFolder)\$($FileName).$($fileTypeCheck.extension)"
+        # Define the new file
+        $newFile = "" | Select-Object -Property path, name, extension, fullFilePath
+        $newFile = $currentFile
+        $newFile.extension = $fileTypeCheck.extension
+        $newFile.fullFilePath = "$($newFile.path)\$($newFile.name).$($newFile.extension)"
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-        $Parsed = Get-ExifInfo $newFilePath "DateCreated"
+        $Parsed = Get-ExifInfo $newFile.fullFilePath "DateCreated"
 
         if ( $Parsed -eq "") { # Creation date not detected
           Write-Host " >> Creation date not detected! Reading alternative dates..."
 
           # Parse date from filename
-          $parsedDateTime = ParseFilename $FileName
+          $parsedDateTime = ParseFilename $newFile.name
           if ( $parsedDateTime -ne "" ) { # Valid parsed date
             # Parse parsedData
             $Parsed = ParseDateTime $parsedDateTime "CustomDate"
 
             # Update metadatas
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-            Write-ExifInfo $newFilePath $Parsed.date $Extension
+            Write-ExifInfo $newFile $Parsed.date
 
             # Rename item
-            RenameFile $WorkingFolder $FileName $Parsed.fileName $fileTypeCheck.extension
+            RenameFile $newFile $Parsed.fileName
             Write-Host ""
           } else { # No parsing possible
             Write-Host " >> Parsing unsuccessfull (no match)! Trying other dates..."
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
-            $altWorkflow = AlternativeDatesWorkflow $newFilePath
+            $altWorkflow = AlternativeDatesWorkflow $newFile.fullFilePath
             if ( $altWorkflow.action -eq "SaveMetadata" ) { # Update all dates in the metadata
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-              Write-ExifInfo $newFilePath $altWorkflow.date $Extension
+              Write-ExifInfo $newFile $altWorkflow.date
 
               # Rename item
-              RenameFile $WorkingFolder $FileName $FileModifyDate.fileName $fileTypeCheck.extension
+              RenameFile $newFile $FileModifyDate.fileName
               Write-Host ""
             } else { # Invalid choice
               Write-Host " >> File skipped"
@@ -125,10 +131,10 @@ Function AutoAnalyzeFiles {
         } else { # Creation date valid
           # Update all dates in the metadata
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-          Write-ExifInfo $newFilePath $Parsed.date $Extension
+          Write-ExifInfo $newFile $Parsed.date
 
           # Rename file
-          RenameFile $WorkingFolder $FileName $Parsed.fileName $fileTypeCheck.extension
+          RenameFile $newFile $Parsed.fileName
         }
         Write-Host ""
       }
@@ -149,7 +155,7 @@ function AlternativeDatesWorkflow {
     .SYNOPSIS
       Manage the workflow when the file need alternative dates searching
     
-    .PARAMETER FilePath
+    .PARAMETER FullFilePath
       The file path to be processed
     
     .RETURNS
@@ -159,13 +165,13 @@ function AlternativeDatesWorkflow {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory=$true)]
-    [String]$FilePath
+    [String]$FullFilePath
   )
 
   $ReturnValue = "" | Select-Object -Property action, date, filename
 
-  $FileModifyDate = Get-ExifInfo $FilePath "FileModifyDate"
-  $FileCreateDateAlt = Get-ExifInfo $FilePath "DateCreatedAlt"
+  $FileModifyDate = Get-ExifInfo $FullFilePath "FileModifyDate"
+  $FileCreateDateAlt = Get-ExifInfo $FullFilePath "DateCreatedAlt"
 
   # Presents option to the user and wait for input
   (New-Object System.Media.SoundPlayer "$env:windir\Media\Windows Unlock.wav").Play()
