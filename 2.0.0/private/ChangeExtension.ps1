@@ -23,7 +23,7 @@ Function ChangeExtension {
   [String]$PathNoExtension = $Path.Substring(0, $Path.LastIndexOf('.'))
 
   # Rename the item
+  # TO DO: Check if file already exist!
   Move-Item -Path "$($Path)" -Destination "$($PathNoExtension).$($Extension)"
-  Write-Host " >> File extension changed to .$($Extension)"
-  Write-Host ""
+  Write-Host " >> $($Emojis["check"]) File extension changed to .$($Extension)"
 }

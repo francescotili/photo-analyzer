@@ -1,7 +1,21 @@
 Function OutputScriptHeader {
-  Write-Host "=============================================="
-  Write-Host "Script for image and video sorting"
   Write-Host ""
+  Write-Host ""
+  Write-Host "██████╗ ██╗  ██╗ ██████╗ ████████╗ ██████╗"
+  Write-Host "██╔══██╗██║  ██║██╔═══██╗╚══██╔══╝██╔═══██╗"
+  Write-Host "██████╔╝███████║██║   ██║   ██║   ██║   ██║"
+  Write-Host "██╔═══╝ ██╔══██║██║   ██║   ██║   ██║   ██║"
+  Write-Host "██║     ██║  ██║╚██████╔╝   ██║   ╚██████╔╝"
+  Write-Host "╚═╝     ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝"
+  Write-Host " █████╗ ███╗   ██╗ █████╗ ██╗  ██╗   ██╗███████╗███████╗██████╗"
+  Write-Host "██╔══██╗████╗  ██║██╔══██╗██║  ╚██╗ ██╔╝╚══███╔╝██╔════╝██╔══██╗"
+  Write-Host "███████║██╔██╗ ██║███████║██║   ╚████╔╝   ███╔╝ █████╗  ██████╔╝"
+  Write-Host "██╔══██║██║╚██╗██║██╔══██║██║    ╚██╔╝   ███╔╝  ██╔══╝  ██╔══██╗"
+  Write-Host "██║  ██║██║ ╚████║██║  ██║███████╗██║   ███████╗███████╗██║  ██║"
+  Write-Host "╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚═╝   ╚══════╝╚══════╝╚═╝  ╚═╝"
+  Write-Host ""
+  Write-Host ""
+  Write-Host "Welcome to Photo Analzyer, a script for image and video sorting"
 }
 
 function OutputSpacer {

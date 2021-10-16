@@ -54,8 +54,7 @@ function ConvertFile {
 
     # Check if file has been created
     if ( Test-Path $outputFile.fullFilePath -PathType Leaf ) {
-      Write-Host " >> >> Conversion completed"
-      Write-Host ""
+      Write-Host " >> $($Emojis["check"]) Conversion completed"
 
       # Read metadata from input file
       Write-Host " >> Analyzing original file metadatas..."
@@ -63,11 +62,12 @@ function ConvertFile {
       $Parsed = Get-ExifInfo $inputFile.fullFilePath "DateCreated"
 
       if ( $Parsed -eq "") { # Creation date not detected
-        Write-Host " >> Creation date not detected! Reading alternative dates..."
+        Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..."
 
         # Parse date from filename
         $parsedDateTime = ParseFilename $inputFile.name
         if ( $parsedDateTime -ne "" ) { # Valid parsed date
+          Write-Host " >> $($Emojis["check"]) Valid date successfully parsed"
           # Parse parsedData
           $Parsed = ParseDateTime $parsedDateTime "CustomDate"
 
@@ -80,9 +80,10 @@ function ConvertFile {
 
           # Make a backup of input file
           ChangeExtension $inputFile.fullFilePath $backupExtension
+          Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
           Write-Host ""
         } else { # No parsing possible
-          Write-Host " >> Parsing unsuccessfull (no match)! Trying other dates..."
+          Write-Host " >> $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..."
 
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
@@ -92,16 +93,20 @@ function ConvertFile {
             Write-ExifInfo $outputFile $altWorkflow.date
 
             # Rename item
-            RenameFile $outputFile $Parsed.fileName
+            RenameFile $outputFile $altWorkflow.fileName
   
             # Make a backup of input file
             ChangeExtension $inputFile.fullFilePath $backupExtension
+            Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
             Write-Host ""
           } else { # Invalid choice
-            Write-Host " >> File skipped"
+            Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
+            Write-Host ""
           }
         }
       } else { # Creation date valid
+        Write-Host " >> $($Emojis["check"]) Creation date valid"
+
         # Update all dates in the metadata
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
         Write-ExifInfo $outputFile $Parsed.date
@@ -111,13 +116,18 @@ function ConvertFile {
 
         # Make a backup of input file
         ChangeExtension $inputFile.fullFilePath $backupExtension
+        Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
+        Write-Host ""
       }
     } else {
-      Write-Host " >> >> Unhandled error during conversion, skipping file..."
+      Write-Host " >> $($Emojis["error"]) Unhandled error during conversion"
+      Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
       Write-Host ""
     }
 
   } else { # Unsupported extension
-    Write-Host " >> Unsupported video type"
+    Write-Host " >> $($Emojis["error"]) Unsupported video type"
+    Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
+    Write-Host ""
   }
 }

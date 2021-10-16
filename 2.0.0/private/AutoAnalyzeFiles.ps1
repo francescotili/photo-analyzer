@@ -31,18 +31,20 @@ Function AutoAnalyzeFiles {
     $fileTypeCheck = CheckFileType $currentFile
     switch ( $fileTypeCheck.action ) {
       'IsValid' { # File type and extension coincide
-        Write-Host " >> Real .$($fileInfos.extension) file detected"
+        Write-Host " >> $($Emojis["check"]) Real .$($fileInfos.extension) file detected"
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
         $Parsed = Get-ExifInfo $currentFile.fullFilePath "DateCreated"
 
         if ( $Parsed -eq "") { # Creation date not detected
-          Write-Host " >> Creation date not detected! Reading alternative dates..."
+          Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..."
 
           # Parse date from filename
           $parsedDateTime = ParseFilename $currentFile.name
           if ( $parsedDateTime -ne "" ) { # Valid parsed date
+            Write-Host " >> $($Emojis["check"]) Valid date successfully parsed"
+
             # Parse parsedData
             $Parsed = ParseDateTime $parsedDateTime "CustomDate"
 
@@ -52,9 +54,10 @@ Function AutoAnalyzeFiles {
 
             # Rename item
             RenameFile $currentFile $Parsed.fileName
+            Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
             Write-Host ""
           } else { # No parsing possible
-            Write-Host " >> Parsing unsuccessfull (no match)! Trying other dates..."
+            Write-Host " >> $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..."
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
@@ -65,23 +68,27 @@ Function AutoAnalyzeFiles {
 
               # Rename item
               RenameFile $currentFile $altWorkflow.filename
+              Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
             } else { # Invalid choice
-              Write-Host " >> File skipped"
+              Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
             }
           }
         } else { # Creation date valid
+          Write-Host " >> $($Emojis["check"]) Creation date valid"
+
           # Update all dates in the metadata
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
           Write-ExifInfo $currentFile $Parsed.date
 
           # Rename file
           RenameFile $currentFile $Parsed.fileName
+          Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
         }
         Write-Host ""
       }
       'Rename'   { # Change file extension
         # Rename file changing extension
-        Write-Host " >> Not a real .$($Extension) file ..."
+        Write-Host " >> $($Emojis["warning"]) Extension mismatch detected ..."
         ChangeExtension $currentFile.fullFilePath $fileTypeCheck.extension
 
         # Define the new file
@@ -95,11 +102,13 @@ Function AutoAnalyzeFiles {
         $Parsed = Get-ExifInfo $newFile.fullFilePath "DateCreated"
 
         if ( $Parsed -eq "") { # Creation date not detected
-          Write-Host " >> Creation date not detected! Reading alternative dates..."
+          Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..."
 
           # Parse date from filename
           $parsedDateTime = ParseFilename $newFile.name
           if ( $parsedDateTime -ne "" ) { # Valid parsed date
+            Write-Host " >> $($Emojis["check"]) Valid date successfully parsed"
+
             # Parse parsedData
             $Parsed = ParseDateTime $parsedDateTime "CustomDate"
 
@@ -109,9 +118,9 @@ Function AutoAnalyzeFiles {
 
             # Rename item
             RenameFile $newFile $Parsed.fileName
-            Write-Host ""
+            Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
           } else { # No parsing possible
-            Write-Host " >> Parsing unsuccessfull (no match)! Trying other dates..."
+            Write-Host " >> $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..."
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
@@ -121,32 +130,34 @@ Function AutoAnalyzeFiles {
               Write-ExifInfo $newFile $altWorkflow.date
 
               # Rename item
-              RenameFile $newFile $FileModifyDate.fileName
-              Write-Host ""
+              RenameFile $newFile $altWorkflow.fileName
+              Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
             } else { # Invalid choice
-              Write-Host " >> File skipped"
-              Write-Host ""
+              Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
             }
           }
         } else { # Creation date valid
+          Write-Host " >> $($Emojis["check"]) Creation date valid"
+
           # Update all dates in the metadata
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
           Write-ExifInfo $newFile $Parsed.date
 
           # Rename file
           RenameFile $newFile $Parsed.fileName
+          Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
         }
         Write-Host ""
       }
       'Convert' {
-        Write-Host " >> The file will be converted..."
+        Write-Host " >> $($Emojis["warning"]) The file must be converted..."
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Converting file ..." -Status "$($Status)%"
 
         # Convert file
         ConvertFile $currentFile
       }
       Default { # File probably not supported
-        Write-Host " >> File extension not supported, skipping..."
+        Write-Host " >> $($Emojis["ban"]) File extension not supported, skipping..."
         Write-Host ""
       }
     }
@@ -181,15 +192,15 @@ function AlternativeDatesWorkflow {
   Write-Host ""
   Write-Host " >> >> What date would you like to use?"
   if (-Not ([string]::IsNullOrEmpty($FileModifyDate.date))) {
-    Write-Host "     1 | File Modified Date/Time: $($FileModifyDate.date)$($FileModifyDate.utcoffset)"
+    Write-Host "     1 | $($Emojis["calendar"]) File Modified Date/Time: $($FileModifyDate.date)$($FileModifyDate.utcoffset)"
   }
   if ( -Not ([string]::IsNullOrEmpty($FileCreateDateAlt.date))) {
-    Write-Host "     2 | Alternative Creation Date/Time: $($FileCreateDateAlt.date)"
+    Write-Host "     2 | $($Emojis["calendar"]) Alternative Creation Date/Time: $($FileCreateDateAlt.date)"
   }
   if (( -Not ([string]::IsNullOrEmpty($FileCreateDateAlt.date))) -and ( -Not ([string]::IsNullOrEmpty($FileModifyDate.date)))) {
-    Write-Host "     3 | Offset alternative Creation Date/Time with UTC from Modify Date/Time: $($FileModifyDate.utcoffset)"
+    Write-Host "     3 | $($Emojis["time"]) Offset alternative Creation Date/Time with UTC from Modify Date/Time: $($FileModifyDate.utcoffset)"
   }
-  Write-Host "     4 | Manually insert date"
+  Write-Host "     4 | $($Emojis["pen"]) Manually insert date"
   $UserSelection = Read-Host " >> >> Insert number"
   
   # Evaluate workflow and return what needs to be done
@@ -201,7 +212,7 @@ function AlternativeDatesWorkflow {
         $ReturnValue.filename = $FileModifyDate.filename
         return $ReturnValue
       } else { # Invalid choice
-        Write-Host "Invalid choice!"
+        Write-Host " >> Invalid choice!"
       }
     }
     '2' { # User would like to use CreateDate alternative
@@ -211,7 +222,7 @@ function AlternativeDatesWorkflow {
         $ReturnValue.filename = $FileCreateDateAlt.filename
         return $ReturnValue
       } else { # Invalid choice
-        Write-Host "Invalid choice!"
+        Write-Host " >> Invalid choice!"
       }
     }
     '3' { # User would like to use CreateDate but with offset
@@ -225,7 +236,7 @@ function AlternativeDatesWorkflow {
         $ReturnValue.filename = $Parsed.fileName
         return $ReturnValue
       } else { # Invalid choice
-        Write-Host "Invalid choice!"
+        Write-Host " >> Invalid choice!"
       }
     }
     '4' { # User wants to specify a custom date
@@ -240,14 +251,14 @@ function AlternativeDatesWorkflow {
           $ReturnValue.filename = $Parsed.fileName
           return $ReturnValue
         } else { # Invalid date
-          Write-Host "Invalid date!"
+          Write-Host " >> Invalid date!"
         }
       } else { # No date specified
-        Write-Host "No date specified!"
+        Write-Host " >> No date specified!"
       }
     }
     Default { # Invalid choice
-      Write-Host "Invalid choice!"
+      Write-Host " >> Invalid choice!"
     }
   }
 }
