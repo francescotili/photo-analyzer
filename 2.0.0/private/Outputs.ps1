@@ -21,6 +21,8 @@ Function OutputScriptHeader {
 |           ~~ Welcome to Photo Analzyer ~~           |
 |         A script for image and video sorting        |
 |                                                     |
+|                                                     |
+|  Author: Francesco Tili                             |
 |_____________________________________________________|
 "@
 
