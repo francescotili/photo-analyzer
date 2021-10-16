@@ -57,7 +57,7 @@ $SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "P
 
 ## Installation
 
-1. Clone the repository
+1. Clone the repository or download the lastest `.zip` release
 2. Find the Powershell Module folder on your PC
     * The **PSModulePath** powershell environment variable (`$Env:PSModulePath`) contains the locations of Windows PowerShell modules. Cmdlets rely on the value of this einvornment variable to find modules.
     * By default, the *PSModulePath* environment variable value contains three folder locations:
@@ -84,3 +84,4 @@ For additional informations on how to install Powershell Modules, refer to the [
 * Integrate conversion of 4K video files from `H264` to `H265` for future proof compatibily and space saving
 * Implement additional checks on video file to prevent corruption, metatag mismatch (useful for Plex)
 * Restore a partially and a fully manual mode
+* Publish the script on Powershell Gallery
