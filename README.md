@@ -10,7 +10,7 @@ PhotoAnalyzer is a complex script for analyzing your photos and videos and organ
 
 The script utilizes `exiftool` for analyzing the file Metadatas and `HandBrake` for convertion purpouse.
 
-Basically, the script analyze searches the Original DateTime of the file (normally the date/time where the image or video was taken) in the following ways:
+Basically, the script searches the Original DateTime of the file (normally the date/time where the image or video was taken) in the following ways:
 
 1. First it checks EXIF metadata and searches for standard Date/Time metatag
 2. If standard EXIF metadata is not found, it tries to parse DateTime from filename
@@ -20,7 +20,7 @@ Basically, the script analyze searches the Original DateTime of the file (normal
 
 Once the script has the date, it proceeds to save this information on the standard EXIF Metadata and rename the file in a coherent way. The format used for renaming is the following: `YYYYMMDD hhmmss+xxx`.
 
-`+xxx` is an incremental number needed for avoid replacing existing files. Sometime, usually with burst-shot photos, the seconds are the same. Thus the incremental number. It can accomodates 999 photos with the exactly the same Date/Time information.
+`+xxx` is an incremental number needed for avoid replacing existing files. Sometime, usually with burst-shot photos, the seconds are the same. Thus the incremental number. It can accomodates 999 photos with exactly the same Date/Time information.
 
 ### Extension mismatch
 
@@ -30,11 +30,17 @@ During the development of the script, I've noticed that some Apple devices somet
 
 Thus, the script rename and choose the right extension.
 
+Moreover, I hate uppercase extensions, so they will lowercased ☺
+
 ### Video conversion
 
 The writing of `AVI` video files metadata is not supported by `exiftool` (and I suppose it will never be). Though it is an outdated video container, the script will use `HandBrakeCLI` to convert `.avi` video files to MP4.
 
-The conversion happen with the best settings and also deinterlace detection and decomb.
+The conversion happen with the best settings and also deinterlace detection and decomb, using the following command:
+
+``` powershell
+HandBrakeCLI -i $inputFile -o $outputFile -d bob -e x264 -q 22 -B 192 2> $null
+```
 
 ## File supported
 
@@ -47,7 +53,7 @@ $SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "P
 ## Requirements
 
 * `exiftool.exe` copied in one of PATH folder of Windows
-* HandBrakeCLI.exe copied in one of PATH folder of Windows
+* `HandBrakeCLI.exe` copied in one of PATH folder of Windows
 
 ## Installation
 
@@ -77,3 +83,4 @@ For additional informations on how to install Powershell Modules, refer to the [
 * Study if it is possible to make a logic based on `Maker` of the photo/video files for better metatag handling
 * Integrate conversion of 4K video files from `H264` to `H265` for future proof compatibily and space saving
 * Implement additional checks on video file to prevent corruption, metatag mismatch (useful for Plex)
+* Restore a partially and a fully manual mode
