@@ -11,6 +11,7 @@ Function ParseDateTime {
       Required. How is the DateTime in the Tag? Following values applies:
       - 'NormalTag' if the date in the Tag is specified with this format -> YYYY:MM:DD hh:mm:ss
       - 'UTCTag' if the date in the Tag is specified with this format -> YYYY:MM:DD hh:mm:ss+hh:mm
+      - 'ZTag' if the date in the Tag is specified with this format -> YYYY:MM:DD hh:mm:ssZ
       - 'CustomDate' if the date is specified by the user (no Tag text) in this format -> YYYY:MM:DD hh:mm:ss
   #>
 
@@ -41,6 +42,15 @@ Function ParseDateTime {
       $Minutes = $Tag.split(":")[4].trim()
       $Seconds = $Tag.split(":")[5].trim().split("+")[0].trim()
       $UTCOffset = "$($Tag.split(":")[5].Substring(2)):$($Tag.split(":")[6])"
+    }
+    'ZTag' {
+      $Year    = $Tag.split(":")[1].trim()
+      $Month   = $Tag.split(":")[2].trim()
+      $Day     = $Tag.split(":")[3].split(" ")[0].trim()
+      $Hour    = $Tag.split(":")[3].split(" ")[1].trim()
+      $Minutes = $Tag.split(":")[4].trim()
+      $Seconds = $Tag.split(":")[5].trim().split("Z")[0].trim()
+      $UTCOffset = ""
     }
     'CustomDate' {
       $Year    = $Tag.split(":")[0].trim()

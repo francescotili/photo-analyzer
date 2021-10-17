@@ -11,11 +11,6 @@ function ConvertFile {
       The file object to convert
   #>
 
-
-
-  # AVI Metadata to transfer
-  # Date/Time -> exiftool $inputFile -DateTimeOriginal
-
   [CmdletBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
@@ -30,9 +25,16 @@ function ConvertFile {
       "videoQuality" = "22";
       "audioBitrate" = "192";
     }
+    "WMV" = @{
+      "decomb" = "bob";
+      "encoder" = "x264";
+      "videoQuality" = "22";
+      "audioBitrate" = "192";
+    }
   }
   $conversionFormat = @{
     "AVI" = "mp4"
+    "WMV" = "mp4"
   }
 
   # File details
