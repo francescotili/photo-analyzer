@@ -11,7 +11,6 @@ $global:Emojis = @{
 }
 
 # PRIVATE FUNCTIONS
-. $PSScriptRoot\private\AnalyzeFiles.ps1
 . $PSScriptRoot\private\AutoAnalyzeFiles.ps1
 . $PSScriptRoot\private\ChangeExtension.ps1
 . $PSScriptRoot\private\CheckFileType.ps1
@@ -29,5 +28,4 @@ $global:Emojis = @{
 . $PSScriptRoot\private\ConvertFile.ps1
 
 # PUBLIC FUNCTIONS
-. $PSScriptRoot\public\PhotoAnalyzer.ps1
 . $PSScriptRoot\public\PhotoAnalyzerAuto.ps1

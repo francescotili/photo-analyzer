@@ -1,11 +1,9 @@
-Function PhotoAnalyzerAuto {
+Function PhotoAnalyzer {
   # Show script header
   Clear-Host
   OutputScriptHeader
 
-  # Set everything to be automatic
-  Set-Variable -Name ScriptMode -Value "Normal" -Scope Global
-  OutputModeStatus
+  Write-Host " >> $($Emojis["warning"]) All changes will be written to files!"
 
   # Ask for path
   Set-Path
