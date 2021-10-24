@@ -38,21 +38,16 @@ function OutputSpacer {
 }
 
 function OutputScriptFooter {
-  (New-Object System.Media.SoundPlayer "$env:windir\Media\Windows Unlock.wav").Play()
-  Write-Host "=============================================="
-  Write-Host ""
-  Write-Host " >> $($Emojis["check"]) Operation completed" -BackgroundColor DarkGreen -ForegroundColor White
-  Write-Host ""
-  if ( $ScriptMode -eq "Normal" ) {
-    $UserChoice = Read-Host " >> >> Would you like to delete *.*_original backup files? s/n"
-    switch ($UserChoice) {
-      's' { # User wants to delete backup files from exiftool
-        CleanBackups
-       }
-      Default { # User doesn't want to delete backup files
-      (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
-       Read-Host "Press enter to exit"
-      }    
-    }
+  Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
+  Write-Host "     OPERATIONS  COMPLETED     " -BackgroundColor DarkGreen -ForegroundColor White
+  Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
+
+  (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
+  for ( $i=0; $i -lt $completed.Length; $i++ ) {
+    Write-Host $completed[$i] -NoNewline
   }
+  Write-Host ""
+  Write-Host ""
+  Write-Host ""
+  CleanBackups
 }

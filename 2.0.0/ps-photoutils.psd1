@@ -6,6 +6,7 @@
   Description = "Analyze, correct and rename your photos and videos"
   PowerShellVersion = "3.0"
   FunctionsToExport = @(
-    'PhotoAnalyzer'
+    'PhotoAnalyzer',
+    'CleanBackups'
   )
 }

@@ -22,10 +22,10 @@ $global:Emojis = @{
 . $PSScriptRoot\private\RenameFile.ps1
 . $PSScriptRoot\private\ParseFilename.ps1
 . $PSScriptRoot\private\GetFilename.ps1
-. $PSScriptRoot\private\CleanBackups.ps1
 . $PSScriptRoot\private\GetExifInfo.ps1
 . $PSScriptRoot\private\WriteExifInfo.ps1
 . $PSScriptRoot\private\ConvertFile.ps1
 
 # PUBLIC FUNCTIONS
 . $PSScriptRoot\public\PhotoAnalyzerAuto.ps1
+. $PSScriptRoot\public\CleanBackups.ps1
