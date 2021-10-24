@@ -32,7 +32,7 @@ Function CleanBackups {
       }
       Default {
         # User doesn't want to delete backup files
-        Read-Host "Press enter to exit"
+        OutputUserError "invalidChoice"
       }
     }
   }
