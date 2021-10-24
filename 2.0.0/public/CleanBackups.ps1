@@ -15,34 +15,40 @@ Function CleanBackups {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [String]$FolderPath,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [String]$Mode
   )
 
   # Analyze and set the WorkingPath
-  if ($WorkingFolder -ne "") { # Global working folder is set
+  if ($WorkingFolder -ne "") {
+    # Global working folder is set
     $UserChoice = Read-Host " >> Would you like to delete *.*_original backup files? s/n"
     switch ($UserChoice) {
       's' {
         $WorkingPath = $WorkingFolder
       }
-      Default { # User doesn't want to delete backup files
+      Default {
+        # User doesn't want to delete backup files
         Read-Host "Press enter to exit"
       }
     }
-  } else { # No global specified, ask the user
+  }
+  else {
+    # No global specified, ask the user
     $UserPath = Read-Host " >> Please specify path to clean"
     if ($UserPath -ne "" ) {
-      $UserPath = $UserPath -replace '["]',''
+      $UserPath = $UserPath -replace '["]', ''
       if (Test-Path -Path "$UserPath") {
         $WorkingPath = $UserPath
-      } else {
+      }
+      else {
         OutputUserError "invalidPath"
       }
-    } else {
+    }
+    else {
       OutputUserError "emptyPath"
     }
   }
@@ -71,7 +77,8 @@ Function CleanBackups {
       Remove-Item $FilePath
     }
     OutputCleanResult "completed"
-  } else {
+  }
+  else {
     # No files found from Get-ChildItem
     OutputCleanResult "noFiles"
   }

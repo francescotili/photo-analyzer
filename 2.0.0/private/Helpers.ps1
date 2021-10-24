@@ -6,15 +6,21 @@ function Set-Path {
   
   $Path = Read-Host "Please specify the folder to analyze (i.e.: D:\user\Pictures)"
   
-  if ($Path) { # Path has been specified
-    $WorkingPath = $path -replace '["]',''    
-    if (-Not(Test-Path -Path "$WorkingPath")) { # Path not valid
+  if ($Path) {
+    # Path has been specified
+    $WorkingPath = $path -replace '["]', ''    
+    if (-Not(Test-Path -Path "$WorkingPath")) {
+      # Path not valid
       OutputUserError "invalidPath"
-    } else { # Valid path
+    }
+    else {
+      # Valid path
       Set-Variable -Name WorkingFolder -Value $WorkingPath -Scope Global
       return $WorkingPath
     }
-  } else { # No path specified
+  }
+  else {
+    # No path specified
     OutputUserError "emptyPath"
   }
 }

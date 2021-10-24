@@ -14,7 +14,7 @@ Function GetFilename {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$file
   )
   $pattern = "(.+?)(\.[^.]*$|$)"
@@ -25,6 +25,6 @@ Function GetFilename {
   # Return the filename and extension
   $ReturnValue = "" | Select-Object -Property fileName, extension
   $ReturnValue.fileName = $regMatches.Groups[1].Value
-  $ReturnValue.extension = ($regMatches.Groups[2].Value).replace('.','')
+  $ReturnValue.extension = ($regMatches.Groups[2].Value).replace('.', '')
   return $ReturnValue
 }

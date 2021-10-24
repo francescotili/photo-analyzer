@@ -26,7 +26,7 @@ Function OutputScriptHeader {
 |_____________________________________________________|
 "@
 
-  for ( $i=0; $i -lt $title.Length; $i++ ) {
+  for ( $i = 0; $i -lt $title.Length; $i++ ) {
     Write-Host $title[$i] -NoNewline
   }
   Write-Host ""
@@ -34,7 +34,7 @@ Function OutputScriptHeader {
 }
 
 function OutputSpacer {
-  for ($i=0; $i -le 10; $i++) { Write-Host "" }
+  for ($i = 0; $i -le 10; $i++) { Write-Host "" }
 }
 
 function OutputScriptFooter {
@@ -43,7 +43,7 @@ function OutputScriptFooter {
   Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
 
   (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
-  for ( $i=0; $i -lt $completed.Length; $i++ ) {
+  for ( $i = 0; $i -lt $completed.Length; $i++ ) {
     Write-Host $completed[$i] -NoNewline
   }
   Write-Host ""
@@ -55,13 +55,13 @@ function OutputScriptFooter {
 function OutputFileResult {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Value
   )
 
   switch ($Value) {
     'success' { Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White }
-    'skip' { Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White}
+    'skip' { Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White }
     Default {}
   }
 }
@@ -69,7 +69,7 @@ function OutputFileResult {
 function OutputCleanResult {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Value
   )
 
@@ -95,7 +95,7 @@ function OutputCleanResult {
 function OutputCheckCreationDate {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Value
   )
 
@@ -109,18 +109,18 @@ function OutputCheckCreationDate {
 function OutputCheckFileType {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Value,
     
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [String]$Extension
   )
 
   switch ($Value) {
     'valid' { Write-Host " >> $($Emojis["check"]) Real .$($Extension) file detected" }
-    'mismatch' { Write-Host " >> $($Emojis["warning"]) Extension mismatch detected ..."}
+    'mismatch' { Write-Host " >> $($Emojis["warning"]) Extension mismatch detected ..." }
     'convert' { Write-Host " >> $($Emojis["warning"]) The file must be converted..." }
-    'unsupported' { Write-Host " >> $($Emojis["ban"]) File extension not supported, skipping..."}
+    'unsupported' { Write-Host " >> $($Emojis["ban"]) File extension not supported, skipping..." }
     Default {}
   }
 }
@@ -128,7 +128,7 @@ function OutputCheckFileType {
 function OutputParsing {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Value
   )
 
@@ -142,7 +142,7 @@ function OutputParsing {
 function OutputUserError {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Value
   )
 
@@ -160,10 +160,10 @@ function OutputUserError {
 function OutputRenameResult {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Value,
     
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [String]$String
   )
 

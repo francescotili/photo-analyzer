@@ -20,14 +20,14 @@ function ConvertFile {
   # Conversion settings
   $conversionSettings = @{
     "AVI" = @{
-      "decomb" = "bob";
-      "encoder" = "x264";
+      "decomb"       = "bob";
+      "encoder"      = "x264";
       "videoQuality" = "22";
       "audioBitrate" = "192";
     }
     "WMV" = @{
-      "decomb" = "bob";
-      "encoder" = "x264";
+      "decomb"       = "bob";
+      "encoder"      = "x264";
       "videoQuality" = "22";
       "audioBitrate" = "192";
     }
@@ -42,7 +42,8 @@ function ConvertFile {
   $backupExtension = "$($inputFile.extension)_original"
 
   # Check if extension match and run the conversion
-  if ( $conversionFormat.Contains( $fileType )) { # We have a match
+  if ( $conversionFormat.Contains( $fileType )) {
+    # We have a match
     # Define the output file
     $outputFile = "" | Select-Object -Property path, name, extension, fullFilePath
     $outputFile.path = $inputFile.path
@@ -63,12 +64,14 @@ function ConvertFile {
       Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
       $Parsed = Get-ExifInfo $inputFile.fullFilePath "DateCreated"
 
-      if ( $Parsed -eq "") { # Creation date not detected
+      if ( $Parsed -eq "") {
+        # Creation date not detected
         Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..."
 
         # Parse date from filename
         $parsedDateTime = ParseFilename $inputFile.name
-        if ( $parsedDateTime -ne "" ) { # Valid parsed date
+        if ( $parsedDateTime -ne "" ) {
+          # Valid parsed date
           Write-Host " >> $($Emojis["check"]) Valid date successfully parsed"
           # Parse parsedData
           $Parsed = ParseDateTime $parsedDateTime "CustomDate"
@@ -84,13 +87,16 @@ function ConvertFile {
           ChangeExtension $inputFile.fullFilePath $backupExtension
           Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
           Write-Host ""
-        } else { # No parsing possible
+        }
+        else {
+          # No parsing possible
           Write-Host " >> $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..."
 
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
           $altWorkflow = AlternativeDatesWorkflow $inputFile.fullFilePath
-          if ( $altWorkflow.action -eq "SaveMetadata" ) { # Update all dates in the metadata
+          if ( $altWorkflow.action -eq "SaveMetadata" ) {
+            # Update all dates in the metadata
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
             Write-ExifInfo $outputFile $altWorkflow.date
 
@@ -101,12 +107,16 @@ function ConvertFile {
             ChangeExtension $inputFile.fullFilePath $backupExtension
             Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
             Write-Host ""
-          } else { # Invalid choice
+          }
+          else {
+            # Invalid choice
             Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
             Write-Host ""
           }
         }
-      } else { # Creation date valid
+      }
+      else {
+        # Creation date valid
         Write-Host " >> $($Emojis["check"]) Creation date valid"
 
         # Update all dates in the metadata
@@ -121,13 +131,16 @@ function ConvertFile {
         Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
         Write-Host ""
       }
-    } else {
+    }
+    else {
       Write-Host " >> $($Emojis["error"]) Unhandled error during conversion"
       Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
       Write-Host ""
     }
 
-  } else { # Unsupported extension
+  }
+  else {
+    # Unsupported extension
     Write-Host " >> $($Emojis["error"]) Unsupported video type"
     Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
     Write-Host ""

@@ -12,10 +12,10 @@ Function RenameFile {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     $inputFile,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$NewName
   )
 

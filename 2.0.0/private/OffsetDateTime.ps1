@@ -12,10 +12,10 @@ Function OffsetDateTime {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Date,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$UTCOffset
   )
 
@@ -28,9 +28,9 @@ Function OffsetDateTime {
   $Seconds = [int]$Date.split(":")[4]
 
   # Parse offset
-  $OffsetDirection = $UTCOffset.substring(0,$UTCOffset.length-5)
-  $OffsetHour      = [int]$UTCOffset.substring(1,$UTCOffset.length-4)
-  $OffsetMinutes   = [int]$UTCOffset.substring(4)
+  $OffsetDirection = $UTCOffset.substring(0, $UTCOffset.length - 5)
+  $OffsetHour = [int]$UTCOffset.substring(1, $UTCOffset.length - 4)
+  $OffsetMinutes = [int]$UTCOffset.substring(4)
 
   # Offset the date
   $PSDate = Get-Date -Date "$($Year)/$($Month)/$($Day) $($Hour):$($Minutes):$($Seconds)"

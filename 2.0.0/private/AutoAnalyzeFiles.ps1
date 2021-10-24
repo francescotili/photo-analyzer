@@ -30,19 +30,22 @@ Function AutoAnalyzeFiles {
 
     $fileTypeCheck = CheckFileType $currentFile
     switch ( $fileTypeCheck.action ) {
-      'IsValid' { # File type and extension coincide
+      'IsValid' {
+        # File type and extension coincide
         OutputCheckFileType "valid" $fileInfos.extension
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
         $Parsed = Get-ExifInfo $currentFile.fullFilePath "DateCreated"
 
-        if ( $Parsed -eq "") { # Creation date not detected
+        if ( $Parsed -eq "") {
+          # Creation date not detected
           OutputCheckCreationDate "undefined"
 
           # Parse date from filename
           $parsedDateTime = ParseFilename $currentFile.name
-          if ( $parsedDateTime -ne "" ) { # Valid parsed date
+          if ( $parsedDateTime -ne "" ) {
+            # Valid parsed date
             OutputParsing "parsed"
 
             # Parse parsedData
@@ -56,24 +59,31 @@ Function AutoAnalyzeFiles {
             RenameFile $currentFile $Parsed.fileName
             OutputFileResult "success"
             Write-Host ""
-          } else { # No parsing possible
+          }
+          else {
+            # No parsing possible
             OutputParsing "nomatch"
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
             $altWorkflow = AlternativeDatesWorkflow $currentFile.fullFilePath
-            if ( $altWorkflow.action -eq "SaveMetadata" ) { # Update all dates in the metadata
+            if ( $altWorkflow.action -eq "SaveMetadata" ) {
+              # Update all dates in the metadata
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
               Write-ExifInfo $currentFile $altWorkflow.date
 
               # Rename item
               RenameFile $currentFile $altWorkflow.filename
               OutputFileResult "success"
-            } else { # Invalid choice
+            }
+            else {
+              # Invalid choice
               OutputFileResult "skip"
             }
           }
-        } else { # Creation date valid
+        }
+        else {
+          # Creation date valid
           OutputCheckCreationDate "valid"
 
           # Update all dates in the metadata
@@ -86,7 +96,8 @@ Function AutoAnalyzeFiles {
         }
         Write-Host ""
       }
-      'Rename'   { # Change file extension
+      'Rename' {
+        # Change file extension
         # Rename file changing extension
         OutputCheckFileType "mismatch" $fileInfos.extension
         ChangeExtension $currentFile.fullFilePath $fileTypeCheck.extension
@@ -101,12 +112,14 @@ Function AutoAnalyzeFiles {
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
         $Parsed = Get-ExifInfo $newFile.fullFilePath "DateCreated"
 
-        if ( $Parsed -eq "") { # Creation date not detected
+        if ( $Parsed -eq "") {
+          # Creation date not detected
           OutputCheckCreationDate "undefined"
 
           # Parse date from filename
           $parsedDateTime = ParseFilename $newFile.name
-          if ( $parsedDateTime -ne "" ) { # Valid parsed date
+          if ( $parsedDateTime -ne "" ) {
+            # Valid parsed date
             OutputParsing "parsed"
 
             # Parse parsedData
@@ -119,24 +132,31 @@ Function AutoAnalyzeFiles {
             # Rename item
             RenameFile $newFile $Parsed.fileName
             OutputFileResult "success"
-          } else { # No parsing possible
+          }
+          else {
+            # No parsing possible
             OutputParsing "nomatch"
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
             $altWorkflow = AlternativeDatesWorkflow $newFile.fullFilePath
-            if ( $altWorkflow.action -eq "SaveMetadata" ) { # Update all dates in the metadata
+            if ( $altWorkflow.action -eq "SaveMetadata" ) {
+              # Update all dates in the metadata
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
               Write-ExifInfo $newFile $altWorkflow.date
 
               # Rename item
               RenameFile $newFile $altWorkflow.fileName
               OutputFileResult "success"
-            } else { # Invalid choice
+            }
+            else {
+              # Invalid choice
               OutputFileResult "skip"
             }
           }
-        } else { # Creation date valid
+        }
+        else {
+          # Creation date valid
           OutputCheckCreationDate "valid"
 
           # Update all dates in the metadata
@@ -156,7 +176,8 @@ Function AutoAnalyzeFiles {
         # Convert file
         ConvertFile $currentFile
       }
-      Default { # File probably not supported
+      Default {
+        # File probably not supported
         OutputCheckFileType "unsupported"
         Write-Host ""
       }
@@ -178,7 +199,7 @@ function AlternativeDatesWorkflow {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$FullFilePath
   )
 
@@ -205,27 +226,34 @@ function AlternativeDatesWorkflow {
   
   # Evaluate workflow and return what needs to be done
   switch ($UserSelection) {
-    '1' { # User would like to use ModifyDate
+    '1' {
+      # User would like to use ModifyDate
       if (-Not ([string]::IsNullOrEmpty($FileModifyDate.date))) {
         $ReturnValue.action = "SaveMetadata"
         $ReturnValue.date = $FileModifyDate.date
         $ReturnValue.filename = $FileModifyDate.filename
         return $ReturnValue
-      } else { # Invalid choice
+      }
+      else {
+        # Invalid choice
         OutputUserError "invalidChoice"
       }
     }
-    '2' { # User would like to use CreateDate alternative
+    '2' {
+      # User would like to use CreateDate alternative
       if ( -Not ([string]::IsNullOrEmpty($FileCreateDateAlt.date))) {
         $ReturnValue.action = "SaveMetadata"
         $ReturnValue.date = $FileCreateDateAlt.date
         $ReturnValue.filename = $FileCreateDateAlt.filename
         return $ReturnValue
-      } else { # Invalid choice
+      }
+      else {
+        # Invalid choice
         OutputUserError "invalidChoice"
       }
     }
-    '3' { # User would like to use CreateDate but with offset
+    '3' {
+      # User would like to use CreateDate but with offset
       if (( -Not ([string]::IsNullOrEmpty($FileCreateDateAlt.date))) -and ( -Not ([string]::IsNullOrEmpty($FileModifyDate.date)))) {
         # Calculate new date
         $NewDate = OffsetDateTime $FileCreateDateAlt.date $FileModifyDate.utcoffset
@@ -235,14 +263,18 @@ function AlternativeDatesWorkflow {
         $ReturnValue.date = $Parsed.date
         $ReturnValue.filename = $Parsed.fileName
         return $ReturnValue
-      } else { # Invalid choice
+      }
+      else {
+        # Invalid choice
         OutputUserError "invalidChoice"
       }
     }
-    '4' { # User wants to specify a custom date
+    '4' {
+      # User wants to specify a custom date
       $UserData = Read-Host " >> >> Insert date (YYYY:MM:DD hh:mm:ss)"
       if ( $userData -ne "" ) {
-        if ( IsValidDate $UserData ) { # Valid date
+        if ( IsValidDate $UserData ) {
+          # Valid date
           # Parse customData
           $Parsed = ParseDateTime $UserData "CustomDate"
 
@@ -250,14 +282,19 @@ function AlternativeDatesWorkflow {
           $ReturnValue.date = $Parsed.date
           $ReturnValue.filename = $Parsed.fileName
           return $ReturnValue
-        } else { # Invalid date
+        }
+        else {
+          # Invalid date
           OutputUserError "invalidDate"
         }
-      } else { # No date specified
+      }
+      else {
+        # No date specified
         OutputUserError "emptyDate"
       }
     }
-    Default { # Invalid choice
+    Default {
+      # Invalid choice
       OutputUserError "emptyChoice"
     }
   }

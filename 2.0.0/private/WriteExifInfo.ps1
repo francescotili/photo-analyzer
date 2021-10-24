@@ -15,10 +15,10 @@ Function Write-ExifInfo {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     $inputFile,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Date
   )
 
@@ -35,7 +35,7 @@ Function Write-ExifInfo {
     { @("PNG", "png") -contains $_ } {
       exiftool -AllDates="$Date" -CreationTime="$Date" $inputFile.fullFilePath -F
     }
-    { @("GIF", "gif") -contains $_ }{
+    { @("GIF", "gif") -contains $_ } {
       exiftool -DateTimeOriginal="$Date" -CreateDate="$Date" -ModifyDate="$Date" -FileModifyDate="$Date" $inputFile.fullFilePath -F
     }
     Default {

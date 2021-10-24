@@ -17,46 +17,46 @@ Function ParseDateTime {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$Tag,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$TagType
   )
 
   switch ($TagType) {
     'NormalTag' {
-      $Year    = $Tag.split(":")[1].trim()
-      $Month   = $Tag.split(":")[2].trim()
-      $Day     = $Tag.split(":")[3].split(" ")[0].trim()
-      $Hour    = $Tag.split(":")[3].split(" ")[1].trim()
+      $Year = $Tag.split(":")[1].trim()
+      $Month = $Tag.split(":")[2].trim()
+      $Day = $Tag.split(":")[3].split(" ")[0].trim()
+      $Hour = $Tag.split(":")[3].split(" ")[1].trim()
       $Minutes = $Tag.split(":")[4].trim()
       $Seconds = $Tag.split(":")[5].trim()
       $UTCOffset = ""
     }
     'UTCTag' {
-      $Year    = $Tag.split(":")[1].trim()
-      $Month   = $Tag.split(":")[2].trim()
-      $Day     = $Tag.split(":")[3].split(" ")[0].trim()
-      $Hour    = $Tag.split(":")[3].split(" ")[1].trim()
+      $Year = $Tag.split(":")[1].trim()
+      $Month = $Tag.split(":")[2].trim()
+      $Day = $Tag.split(":")[3].split(" ")[0].trim()
+      $Hour = $Tag.split(":")[3].split(" ")[1].trim()
       $Minutes = $Tag.split(":")[4].trim()
       $Seconds = $Tag.split(":")[5].trim().split("+")[0].trim()
       $UTCOffset = "$($Tag.split(":")[5].Substring(2)):$($Tag.split(":")[6])"
     }
     'ZTag' {
-      $Year    = $Tag.split(":")[1].trim()
-      $Month   = $Tag.split(":")[2].trim()
-      $Day     = $Tag.split(":")[3].split(" ")[0].trim()
-      $Hour    = $Tag.split(":")[3].split(" ")[1].trim()
+      $Year = $Tag.split(":")[1].trim()
+      $Month = $Tag.split(":")[2].trim()
+      $Day = $Tag.split(":")[3].split(" ")[0].trim()
+      $Hour = $Tag.split(":")[3].split(" ")[1].trim()
       $Minutes = $Tag.split(":")[4].trim()
       $Seconds = $Tag.split(":")[5].trim().split("Z")[0].trim()
       $UTCOffset = ""
     }
     'CustomDate' {
-      $Year    = $Tag.split(":")[0].trim()
-      $Month   = $Tag.split(":")[1].trim()
-      $Day     = $Tag.split(":")[2].split(" ")[0].trim()
-      $Hour    = $Tag.split(":")[2].split(" ")[1].trim()
+      $Year = $Tag.split(":")[0].trim()
+      $Month = $Tag.split(":")[1].trim()
+      $Day = $Tag.split(":")[2].split(" ")[0].trim()
+      $Hour = $Tag.split(":")[2].split(" ")[1].trim()
       $Minutes = $Tag.split(":")[3].trim()
       $Seconds = $Tag.split(":")[4].trim()
       $UTCOffset = ""

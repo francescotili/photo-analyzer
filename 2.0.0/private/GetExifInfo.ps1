@@ -18,10 +18,10 @@ Function Get-ExifInfo {
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$File,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [String]$InfoType
   )
 
@@ -63,14 +63,17 @@ Function Get-ExifInfo {
       }
 
       # Parse data and return value
-      if(( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) { # Tag exists
+      if (( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) {
+        # Tag exists
         $Parsed = ParseDateTime $Response $TagType
-        if( IsValidDate $Parsed.date ) {
+        if ( IsValidDate $Parsed.date ) {
           return $Parsed
-        } else {
+        }
+        else {
           return ""
         }        
-      } else {
+      }
+      else {
         return ""
       }
     }
@@ -105,14 +108,17 @@ Function Get-ExifInfo {
       }
 
       # Parse data and return value
-      if(( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) { # Tag exists
+      if (( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) {
+        # Tag exists
         $Parsed = ParseDateTime $Response $TagType
-        if( IsValidDate $Parsed.date ) {
+        if ( IsValidDate $Parsed.date ) {
           return $Parsed
-        } else {
+        }
+        else {
           return ""
         }        
-      } else {
+      }
+      else {
         return ""
       }
     }
