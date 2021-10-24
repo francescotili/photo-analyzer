@@ -25,5 +25,5 @@ Function ChangeExtension {
   # Rename the item
   # TO DO: Check if file already exist!
   Move-Item -Path "$($Path)" -Destination "$($PathNoExtension).$($Extension)"
-  Write-Host " >> $($Emojis["check"]) File extension changed to .$($Extension)"
+  OutputRenameResult "extensionChanged" $Extension
 }

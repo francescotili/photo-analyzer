@@ -40,10 +40,10 @@ Function CleanBackups {
       if (Test-Path -Path "$UserPath") {
         $WorkingPath = $UserPath
       } else {
-        Write-Error -Message "Unvalid path! Exiting..." -ErrorAction Stop
+        OutputUserError "invalidPath"
       }
     } else {
-      Write-Error -Message "No path specified!" -ErrorAction Stop
+      OutputUserError "emptyPath"
     }
   }
 
@@ -70,16 +70,9 @@ Function CleanBackups {
       Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Deleting $($FileName)" -Status "$Status%"
       Remove-Item $FilePath
     }
-    Write-Host ""
-    Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
-    Write-Host "      CLEANING  COMPLETED      " -BackgroundColor DarkGreen -ForegroundColor White
-    Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
-    (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
-    Write-Host ""
+    OutputCleanResult "completed"
   } else {
     # No files found from Get-ChildItem
-    Write-Host ""
-    Write-Host "        NO FILES FOUND         " -BackgroundColor DarkRed -ForegroundColor White
-    Write-Host ""
+    OutputCleanResult "noFiles"
   }
 }

@@ -41,5 +41,5 @@ Function RenameFile {
   }
 
   Rename-Item -Path $TempFile -NewName $FinalName
-  Write-Host " >> File renamed: $FinalName"
+  OutputRenameResult "fileRenamed" $FinalName
 }

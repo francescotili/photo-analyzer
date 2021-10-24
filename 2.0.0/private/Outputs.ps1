@@ -51,3 +51,125 @@ function OutputScriptFooter {
   Write-Host ""
   CleanBackups
 }
+
+function OutputFileResult {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory=$true)]
+    [String]$Value
+  )
+
+  switch ($Value) {
+    'success' { Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White }
+    'skip' { Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White}
+    Default {}
+  }
+}
+
+function OutputCleanResult {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory=$true)]
+    [String]$Value
+  )
+
+  switch ($Value) {
+    'completed' {
+      Write-Host ""
+      Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
+      Write-Host "      CLEANING  COMPLETED      " -BackgroundColor DarkGreen -ForegroundColor White
+      Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
+      (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
+      Write-Host ""
+    }
+    'noFiles' {
+      Write-Host ""
+      Write-Host "        NO FILES FOUND         " -BackgroundColor DarkRed -ForegroundColor White
+      Write-Host ""
+    }
+    Default {}
+  }
+
+}
+
+function OutputCheckCreationDate {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory=$true)]
+    [String]$Value
+  )
+
+  switch ($Value) {
+    'valid' { Write-Host " >> $($Emojis["check"]) Creation date valid" }
+    'undefined' { Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..." }
+    Default {}
+  }
+}
+
+function OutputCheckFileType {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory=$true)]
+    [String]$Value,
+    
+    [Parameter(Mandatory=$false)]
+    [String]$Extension
+  )
+
+  switch ($Value) {
+    'valid' { Write-Host " >> $($Emojis["check"]) Real .$($Extension) file detected" }
+    'mismatch' { Write-Host " >> $($Emojis["warning"]) Extension mismatch detected ..."}
+    'convert' { Write-Host " >> $($Emojis["warning"]) The file must be converted..." }
+    'unsupported' { Write-Host " >> $($Emojis["ban"]) File extension not supported, skipping..."}
+    Default {}
+  }
+}
+
+function OutputParsing {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory=$true)]
+    [String]$Value
+  )
+
+  switch ($Value) {
+    'parsed' { Write-Host " >> $($Emojis["check"]) Valid date successfully parsed" }
+    'nomatch' { Write-Host " >> $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..." }
+    Default {}
+  }
+}
+
+function OutputUserError {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory=$true)]
+    [String]$Value
+  )
+
+  switch ($Value) {
+    'invalidChoice' { Write-Host " >> Invalid choice!" }
+    'emptyChoice' { Write-Host " >> No action specified!" }
+    'invalidDate' { Write-Host " >> Invalid date!" }
+    'emptyDate' { Write-Host " >> No date specified!" }
+    'invalidPath' { Write-Error -Message " >> Specified path is not valid! Exiting..." -ErrorAction Stop }
+    'emptyPath' { Write-Error -Message " >> You have not specified a path. Exiting..." -ErrorAction Stop }
+    Default {}
+  }
+}
+
+function OutputRenameResult {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory=$true)]
+    [String]$Value,
+    
+    [Parameter(Mandatory=$false)]
+    [String]$String
+  )
+
+  switch ($Value) {
+    'extensionChanged' { Write-Host " >> $($Emojis["check"]) File extension changed to .$($String)" }
+    'fileRenamed' { Write-Host " >> File renamed: $($String)" }
+    Default {}
+  }
+}
