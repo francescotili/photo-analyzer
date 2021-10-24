@@ -17,12 +17,13 @@ Function AutoAnalyzeFiles {
     $Status = "{0:N0}" -f $a
 
     # Variables for the file
-    $currentFile = "" | Select-Object -Property path, name, extension, fullFilePath
-    $currentFile.fullFilePath = $_.FullName
-    $currentFile.path = Split-Path -Path $currentFile.fullFilePath -Parent
-    $fileInfos = GetFilename( Split-Path -Path $currentFile.fullFilePath -Leaf )
-    $currentFile.name = $fileInfos.fileName
-    $currentFile.extension = $fileInfos.extension
+    $fileInfos = GetFilename( Split-Path -Path $_.FullName -Leaf )
+    $currentFile = @{
+      fullFilePath = $_.FullName
+      path = Split-Path -Path $_.FullName -Parent
+      name = $fileInfos.fileName
+      extension = $fileInfos.extension
+    }
 
     # Analyze real file type
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
