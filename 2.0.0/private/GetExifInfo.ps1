@@ -37,24 +37,19 @@ Function Get-ExifInfo {
       switch ($Extension) {
         { @("PNG") -contains $_ } {
           $Response = exiftool -CreationTime $File
-          $TagType = "NormalTag"
         }
         { @("MP4") -contains $_ } {
           # Canon use -EXIF:CreateDate as correct date and time
           $Response = exiftool -EXIF:CreateDate $File
-          $TagType = "NormalTag"
         }
         { @("MOV") -contains $_ } {
           $Response = exiftool -CreationDate $File
-          $TagType = "UTCTag"
         }
         { @("WMV") -contains $_ } {
           $Response = exiftool -CreationDate $File
-          $TagType = "ZTag"
         }
         { @("JPEG", "HEIC", "GIF", "AVI") -contains $_ } {
           $Response = exiftool -DateTimeOriginal $File
-          $TagType = "NormalTag"
         }
         Default {
           Write-Error -Message "File type not supported" -ErrorAction Continue
@@ -65,7 +60,7 @@ Function Get-ExifInfo {
       # Parse data and return value
       if (( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) {
         # Tag exists
-        $Parsed = ParseDateTime $Response $TagType
+        $Parsed = ParseDateTime $Response
         if ( IsValidDate $Parsed.date ) {
           return $Parsed
         }
@@ -82,7 +77,7 @@ Function Get-ExifInfo {
       $Response = exiftool -FileModifyDate $File
       
       # Parse data and return value
-      return ParseDateTime $Response "UTCTag"
+      return ParseDateTime $Response
     }
     Default {
       Write-Error -Message "Invalid InfoType specified" -ErrorAction Continue
@@ -95,11 +90,9 @@ Function Get-ExifInfo {
       switch ($Extension) {
         { @("MP4") -contains $_ } {
           $Response = exiftool -CreateDate $File
-          $TagType = "NormalTag"
         }
         { @("JPEG", "HEIC", "GIF", "PNG", "MOV", "WMV") -contains $_ } {
           $Response = ""
-          $TagType = "NormalTag"
         }
         Default {
           Write-Error -Message "File type not supported" -ErrorAction Continue
@@ -110,7 +103,7 @@ Function Get-ExifInfo {
       # Parse data and return value
       if (( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) {
         # Tag exists
-        $Parsed = ParseDateTime $Response $TagType
+        $Parsed = ParseDateTime $Response
         if ( IsValidDate $Parsed.date ) {
           return $Parsed
         }

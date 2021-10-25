@@ -49,7 +49,7 @@ Function AutoAnalyzeFiles {
             OutputParsing "parsed"
 
             # Parse parsedData
-            $Parsed = ParseDateTime $parsedDateTime "CustomDate"
+            $Parsed = ParseDateTime $parsedDateTime
 
             # Update metadatas
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
@@ -122,7 +122,7 @@ Function AutoAnalyzeFiles {
             OutputParsing "parsed"
 
             # Parse parsedData
-            $Parsed = ParseDateTime $parsedDateTime "CustomDate"
+            $Parsed = ParseDateTime $parsedDateTime
 
             # Update metadatas
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
@@ -260,7 +260,7 @@ function AlternativeDatesWorkflow {
       if (( -Not ([string]::IsNullOrEmpty($FileCreateDateAlt.date))) -and ( -Not ([string]::IsNullOrEmpty($FileModifyDate.date)))) {
         # Calculate new date
         $NewDate = OffsetDateTime $FileCreateDateAlt.date $FileModifyDate.utcoffset
-        $Parsed = ParseDateTime $NewDate "CustomDate"
+        $Parsed = ParseDateTime $NewDate
 
         $ReturnValue = @{
           action   = "SaveMetadata"
@@ -281,7 +281,7 @@ function AlternativeDatesWorkflow {
         if ( IsValidDate $UserData ) {
           # Valid date
           # Parse customData
-          $Parsed = ParseDateTime $UserData "CustomDate"
+          $Parsed = ParseDateTime
 
           $ReturnValue = @{
             action   = "SaveMetadata"

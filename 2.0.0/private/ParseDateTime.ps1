@@ -6,70 +6,63 @@ Function ParseDateTime {
     
     .PARAMETER Tag
       Required. The complete tag returned by a single exiftool query
-    
-    .PARAMETER TagType
-      Required. How is the DateTime in the Tag? Following values applies:
-      - 'NormalTag' if the date in the Tag is specified with this format -> YYYY:MM:DD hh:mm:ss
-      - 'UTCTag' if the date in the Tag is specified with this format -> YYYY:MM:DD hh:mm:ss+hh:mm
-      - 'ZTag' if the date in the Tag is specified with this format -> YYYY:MM:DD hh:mm:ssZ
-      - 'CustomDate' if the date is specified by the user (no Tag text) in this format -> YYYY:MM:DD hh:mm:ss
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    [String]$Tag,
-
-    [Parameter(Mandatory = $true)]
-    [String]$TagType
+    [String]$Tag
   )
 
-  switch ($TagType) {
-    'NormalTag' {
-      $Year = $Tag.split(":")[1].trim()
-      $Month = $Tag.split(":")[2].trim()
-      $Day = $Tag.split(":")[3].split(" ")[0].trim()
-      $Hour = $Tag.split(":")[3].split(" ")[1].trim()
-      $Minutes = $Tag.split(":")[4].trim()
-      $Seconds = $Tag.split(":")[5].trim()
-      $UTCOffset = ""
+  $Pattern = "(.*?) : (.*)"
+  
+  # Check if Tag is parsable
+  if ( $Tag -match $Pattern ) {
+    # Match the tag and capture groups
+    $regMatches = [regex]::Matches($Tag, $Pattern)
+
+    # Identify the capture groups
+    $exifTag = @{
+      name  = $regMatches.Groups[1].Value
+      value = $regMatches.Groups[2].Value
     }
-    'UTCTag' {
-      $Year = $Tag.split(":")[1].trim()
-      $Month = $Tag.split(":")[2].trim()
-      $Day = $Tag.split(":")[3].split(" ")[0].trim()
-      $Hour = $Tag.split(":")[3].split(" ")[1].trim()
-      $Minutes = $Tag.split(":")[4].trim()
-      $Seconds = $Tag.split(":")[5].trim().split("+")[0].trim()
-      $UTCOffset = "$($Tag.split(":")[5].Substring(2)):$($Tag.split(":")[6])"
+
+    # Parse the date and time
+    $datePattern = "(19|20\d{2})(?:[_.-:])?(0[1-9]|1[0-2])(?:[_.-:])?([0-2]\d|3[0-1]).*([0-1][0-9]|2[0-3])(?:[_.-:])?([0-5][0-9])(?:[_.-:])?([0-5][0-9])([+-])?([0-1][0-9]|2[0-4])?(?:[_.-:])?([0-5][0-9])?"
+
+    # Check if TagValue is a validDate
+    if ( $exifTag.value -match $datePattern ) {
+      # Match the tag and capture groups
+      $dateMatches = [regex]::Matches($exifTag.value, $datePattern)
+
+      # Identify the capture groups
+      $parsedDate = @{
+        year      = $dateMatches.Groups[1].Value
+        month     = $dateMatches.Groups[2].Value
+        day       = $dateMatches.Groups[3].Value
+        hour      = $dateMatches.Groups[4].Value
+        minute    = $dateMatches.Groups[5].Value
+        second    = $dateMatches.Groups[6].Value
+        utcoffset = @{
+          direction = $dateMatches.Groups[7].Value
+          hour      = $dateMatches.Groups[8].Value
+          minute    = $dateMatches.Groups[9].Value
+        }
+      }
+
+      # TO DO: return the parsedDate object
+      # TO CHANGE!
+      return @{
+        fileName  = "$($parsedDate.year)$($parsedDate.month)$($parsedDate.day) $($parsedDate.hour)$($parsedDate.minute)$($parsedDate.second)"
+        date      = "$($parsedDate.year):$($parsedDate.month):$($parsedDate.day) $($parsedDate.hour):$($parsedDate.minute):$($parsedDate.second)"
+        utcoffset = "$($parsedDate.utcoffset.direction)$($parsedDate.utcoffset.hour):$($parsedDate.utcoffset.minute)"
+      }
     }
-    'ZTag' {
-      $Year = $Tag.split(":")[1].trim()
-      $Month = $Tag.split(":")[2].trim()
-      $Day = $Tag.split(":")[3].split(" ")[0].trim()
-      $Hour = $Tag.split(":")[3].split(" ")[1].trim()
-      $Minutes = $Tag.split(":")[4].trim()
-      $Seconds = $Tag.split(":")[5].trim().split("Z")[0].trim()
-      $UTCOffset = ""
-    }
-    'CustomDate' {
-      $Year = $Tag.split(":")[0].trim()
-      $Month = $Tag.split(":")[1].trim()
-      $Day = $Tag.split(":")[2].split(" ")[0].trim()
-      $Hour = $Tag.split(":")[2].split(" ")[1].trim()
-      $Minutes = $Tag.split(":")[3].trim()
-      $Seconds = $Tag.split(":")[4].trim()
-      $UTCOffset = ""
-    }
-    Default {
-      Write-Error -Message "Wrong type of Tag specified" -ErrorAction Stop
-      Break
+    else {  
+      Write-Host "The specified tag contains no date/time information!"
     }
   }
-
-  return @{
-    fileName = "$($Year)$($Month)$($Day) $($Hour)$($Minutes)$($Seconds)"
-    date = "$($Year):$($Month):$($Day) $($Hour):$($Minutes):$($Seconds)"
-    utcoffset = $UTCOffset
+  else {
+    Write-Host "The specified tag is not a valid exifTool tag!"
   }
 }

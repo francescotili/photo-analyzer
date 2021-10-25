@@ -75,7 +75,7 @@ function ConvertFile {
           # Valid parsed date
           OutputParsing "parsed"
           # Parse parsedData
-          $Parsed = ParseDateTime $parsedDateTime "CustomDate"
+          $Parsed = ParseDateTime $parsedDateTime
 
           # Update metadatas
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
