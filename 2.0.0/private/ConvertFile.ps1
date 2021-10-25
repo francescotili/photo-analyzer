@@ -45,11 +45,12 @@ function ConvertFile {
   if ( $conversionFormat.Contains( $fileType )) {
     # We have a match
     # Define the output file
-    $outputFile = "" | Select-Object -Property path, name, extension, fullFilePath
-    $outputFile.path = $inputFile.path
-    $outputFile.name = $inputFile.name
-    $outputFile.extension = $conversionFormat[$fileType]
-    $outputFile.fullFilePath = "$($outputFile.path)\$($outputFile.name).$($outputFile.extension)"
+    $outputFile = @{
+      path = $inputFile.path
+      name = $inputFile.name
+      extension = $conversionFormat[$fileType]
+      fullFilePath = "$($inputFile.path)\$($inputFile.name).$($conversionFormat[$fileType])"
+    }
 
     # Convert the file  
     # 2> $null is to hide HandBrakeCLI useless output
@@ -57,22 +58,22 @@ function ConvertFile {
 
     # Check if file has been created
     if ( Test-Path $outputFile.fullFilePath -PathType Leaf ) {
-      Write-Host " >> $($Emojis["check"]) Conversion completed"
+      OutputConversionResult "success"
 
       # Read metadata from input file
-      Write-Host " >> Analyzing original file metadatas..."
+      OutputCheckCreationDate "analyzing"
       Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
       $Parsed = Get-ExifInfo $inputFile.fullFilePath "DateCreated"
 
       if ( $Parsed -eq "") {
         # Creation date not detected
-        Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..."
+        OutputCheckCreationDate "undefined"
 
         # Parse date from filename
         $parsedDateTime = ParseFilename $inputFile.name
         if ( $parsedDateTime -ne "" ) {
           # Valid parsed date
-          Write-Host " >> $($Emojis["check"]) Valid date successfully parsed"
+          OutputParsing "parsed"
           # Parse parsedData
           $Parsed = ParseDateTime $parsedDateTime "CustomDate"
 
@@ -85,12 +86,12 @@ function ConvertFile {
 
           # Make a backup of input file
           ChangeExtension $inputFile.fullFilePath $backupExtension
-          Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
+          OutputFileResult "success"
           Write-Host ""
         }
         else {
           # No parsing possible
-          Write-Host " >> $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..."
+          OutputParsing "nomatch"
 
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
@@ -105,19 +106,19 @@ function ConvertFile {
   
             # Make a backup of input file
             ChangeExtension $inputFile.fullFilePath $backupExtension
-            Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
+            OutputFileResult "success"
             Write-Host ""
           }
           else {
             # Invalid choice
-            Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
+            OutputFileResult "skip"
             Write-Host ""
           }
         }
       }
       else {
         # Creation date valid
-        Write-Host " >> $($Emojis["check"]) Creation date valid"
+        OutputCheckCreationDate "valid"
 
         # Update all dates in the metadata
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
@@ -128,21 +129,21 @@ function ConvertFile {
 
         # Make a backup of input file
         ChangeExtension $inputFile.fullFilePath $backupExtension
-        Write-Host "   FILE SUCCESSFULLY UPDATED   " -BackgroundColor DarkGreen -ForegroundColor White
+        OutputFileResult "success"
         Write-Host ""
       }
     }
     else {
-      Write-Host " >> $($Emojis["error"]) Unhandled error during conversion"
-      Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
+      OutputConversionResult "error"
+      OutputFileResult "skip"
       Write-Host ""
     }
 
   }
   else {
     # Unsupported extension
-    Write-Host " >> $($Emojis["error"]) Unsupported video type"
-    Write-Host "         FILE  SKIPPED         " -BackgroundColor DarkRed -ForegroundColor White
-    Write-Host ""
+      OutputConversionResult "unsupported"
+      OutputFileResult "skip"
+      Write-Host ""
   }
 }
