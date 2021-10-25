@@ -62,14 +62,14 @@ Function ParseDateTime {
       $UTCOffset = ""
     }
     Default {
-      Write-Error -Message "Wrong type of Tag specified" -ErrorAction Continue
+      Write-Error -Message "Wrong type of Tag specified" -ErrorAction Stop
       Break
     }
   }
 
-  $ReturnValue = "" | Select-Object -Property fileName, date, utcoffset
-  $ReturnValue.fileName = "$Year$Month$Day $Hour$Minutes$Seconds"
-  $ReturnValue.date = "${Year}:${Month}:${Day} ${Hour}:${Minutes}:${Seconds}"
-  $ReturnValue.utcoffset = $UTCOffset
-  return $ReturnValue
+  return @{
+    fileName = "$($Year)$($Month)$($Day) $($Hour)$($Minutes)$($Seconds)"
+    date = "$($Year):$($Month):$($Day) $($Hour):$($Minutes):$($Seconds)"
+    utcoffset = $UTCOffset
+  }
 }

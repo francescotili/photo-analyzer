@@ -20,32 +20,35 @@ Function OffsetDateTime {
   )
 
   # Parse input date
-  $Year    = [int]$Date.split(":")[0]
-  $Month   = [int]$Date.split(":")[1]
-  $Day     = [int]$Date.split(":")[2].split(" ")[0]
-  $Hour    = [int]$Date.split(":")[2].split(" ")[1]
-  $Minutes = [int]$Date.split(":")[3]
-  $Seconds = [int]$Date.split(":")[4]
+  $inputDate = @{
+    year   = [int]$Date.split(":")[0]
+    month  = [int]$Date.split(":")[1]
+    day    = [int]$Date.split(":")[2].split(" ")[0]
+    hour   = [int]$Date.split(" ")[2].split(":")[1]
+    minute = [int]$Date.split(":")[3]
+    second = [int]$Date.split(":")[4]
+  }
 
   # Parse offset
-  $OffsetDirection = $UTCOffset.substring(0, $UTCOffset.length - 5)
-  $OffsetHour = [int]$UTCOffset.substring(1, $UTCOffset.length - 4)
-  $OffsetMinutes = [int]$UTCOffset.substring(4)
+  $offset = @{
+    direction = $UTCOffset.substring(0, $UTCOffset.length - 5)
+    hour      = [int]$UTCOffset.substring(1, $UTCOffset.length - 4)
+    minute    = [int]$UTCOffset.substring(4)
+  }
 
   # Offset the date
-  $PSDate = Get-Date -Date "$($Year)/$($Month)/$($Day) $($Hour):$($Minutes):$($Seconds)"
-  switch ($OffsetDirection) {
+  $PSDate = Get-Date -Date "$($inputDate.year)/$($inputDate.month)/$($inputDate.day) $($inputDate.hour):$($inputDate.minute):$($inputDate.second)"
+  switch ($offset.direction) {
     '+' {
-      $PSDate += "$($OffsetHour):$($OffsetMinutes)"
+      $PSDate += "$($offset.hour):$($offset.minute)"
     }
     '-' {
-      $PSDate -= "$($OffsetHour):$($OffsetMinutes)"
+      $PSDate -= "$($offset.hour):$($offset.minute)"
     }
     Default {
-      Write-Error -Message "Unhandled exception with Offset direction, offset is: $OffsetDirection" -ErrorAction Stop
+      Write-Error -Message "Unhandled exception with Offset direction, offset is: $($offset.direction)" -ErrorAction Stop
     }
   }
 
-  [String]$ReturnDate = Get-Date -Date $PSDate -Format "yyyy:MM:dd HH:mm:ss"
-  return $ReturnDate
+  return Get-Date -Date $PSDate -Format "yyyy:MM:dd HH:mm:ss"
 }

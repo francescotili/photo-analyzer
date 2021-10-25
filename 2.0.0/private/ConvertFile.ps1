@@ -20,16 +20,16 @@ function ConvertFile {
   # Conversion settings
   $conversionSettings = @{
     "AVI" = @{
-      "decomb"       = "bob";
-      "encoder"      = "x264";
-      "videoQuality" = "22";
-      "audioBitrate" = "192";
+      decomb       = "bob";
+      encoder      = "x264";
+      videoQuality = "22";
+      audioBitrate = "192";
     }
     "WMV" = @{
-      "decomb"       = "bob";
-      "encoder"      = "x264";
-      "videoQuality" = "22";
-      "audioBitrate" = "192";
+      decomb       = "bob";
+      encoder      = "x264";
+      videoQuality = "22";
+      audioBitrate = "192";
     }
   }
   $conversionFormat = @{
@@ -53,7 +53,7 @@ function ConvertFile {
 
     # Convert the file  
     # 2> $null is to hide HandBrakeCLI useless output
-    HandBrakeCLI -i $inputFile.fullFilePath -o $outputFile.fullFilePath -d $conversionSettings[$fileType]["decomb"] -e $conversionSettings[$fileType]["encoder"] -q $conversionSettings[$fileType]["videoQuality"] -B $conversionSettings[$fileType]["audioBitrate"] 2> $null
+    HandBrakeCLI -i $inputFile.fullFilePath -o $outputFile.fullFilePath -d $conversionSettings[$fileType].decomb -e $conversionSettings[$fileType].encoder -q $conversionSettings[$fileType].videoQuality -B $conversionSettings[$fileType].audioBitrate 2> $null
 
     # Check if file has been created
     if ( Test-Path $outputFile.fullFilePath -PathType Leaf ) {

@@ -17,12 +17,11 @@ Function AutoAnalyzeFiles {
     $Status = "{0:N0}" -f $a
 
     # Variables for the file
-    $fileInfos = GetFilename( Split-Path -Path $_.FullName -Leaf )
     $currentFile = @{
       fullFilePath = $_.FullName
-      path = Split-Path -Path $_.FullName -Parent
-      name = $fileInfos.fileName
-      extension = $fileInfos.extension
+      path         = Split-Path -Path $_.FullName -Parent
+      name         = (GetFilename( Split-Path -Path $_.FullName -Leaf )).fileName
+      extension    = (GetFilename( Split-Path -Path $_.FullName -Leaf )).extension
     }
 
     # Analyze real file type
@@ -104,7 +103,6 @@ Function AutoAnalyzeFiles {
         ChangeExtension $currentFile.fullFilePath $fileTypeCheck.extension
 
         # Define the new file
-        $newFile = "" | Select-Object -Property path, name, extension, fullFilePath
         $newFile = $currentFile
         $newFile.extension = $fileTypeCheck.extension
         $newFile.fullFilePath = "$($newFile.path)\$($newFile.name).$($newFile.extension)"
@@ -230,9 +228,11 @@ function AlternativeDatesWorkflow {
     '1' {
       # User would like to use ModifyDate
       if (-Not ([string]::IsNullOrEmpty($FileModifyDate.date))) {
-        $ReturnValue.action = "SaveMetadata"
-        $ReturnValue.date = $FileModifyDate.date
-        $ReturnValue.filename = $FileModifyDate.filename
+        $ReturnValue = @{
+          action   = "SaveMetadata"
+          date     = $FileModifyDate.date
+          filename = $FileModifyDate.filename
+        }
         return $ReturnValue
       }
       else {
@@ -243,9 +243,11 @@ function AlternativeDatesWorkflow {
     '2' {
       # User would like to use CreateDate alternative
       if ( -Not ([string]::IsNullOrEmpty($FileCreateDateAlt.date))) {
-        $ReturnValue.action = "SaveMetadata"
-        $ReturnValue.date = $FileCreateDateAlt.date
-        $ReturnValue.filename = $FileCreateDateAlt.filename
+        $ReturnValue = @{
+          action   = "SaveMetadata"
+          date     = $FileCreateDateAlt.date
+          filename = $FileCreateDateAlt.filename
+        }
         return $ReturnValue
       }
       else {
@@ -260,9 +262,11 @@ function AlternativeDatesWorkflow {
         $NewDate = OffsetDateTime $FileCreateDateAlt.date $FileModifyDate.utcoffset
         $Parsed = ParseDateTime $NewDate "CustomDate"
 
-        $ReturnValue.action = "SaveMetadata"
-        $ReturnValue.date = $Parsed.date
-        $ReturnValue.filename = $Parsed.fileName
+        $ReturnValue = @{
+          action   = "SaveMetadata"
+          date     = $Parsed.date
+          filename = $Parsed.fileName
+        }
         return $ReturnValue
       }
       else {
@@ -279,9 +283,11 @@ function AlternativeDatesWorkflow {
           # Parse customData
           $Parsed = ParseDateTime $UserData "CustomDate"
 
-          $ReturnValue.action = "SaveMetadata"
-          $ReturnValue.date = $Parsed.date
-          $ReturnValue.filename = $Parsed.fileName
+          $ReturnValue = @{
+            action   = "SaveMetadata"
+            date     = $Parsed.date
+            filename = $Parsed.fileName
+          }
           return $ReturnValue
         }
         else {
