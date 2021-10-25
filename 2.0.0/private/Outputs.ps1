@@ -102,6 +102,7 @@ function OutputCheckCreationDate {
   switch ($Value) {
     'valid' { Write-Host " >> $($Emojis["check"]) Creation date valid" }
     'undefined' { Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..." }
+    'analyzing' { Write-Host " >> Analyzing original file metadatas..." }
     Default {}
   }
 }
@@ -170,6 +171,21 @@ function OutputRenameResult {
   switch ($Value) {
     'extensionChanged' { Write-Host " >> $($Emojis["check"]) File extension changed to .$($String)" }
     'fileRenamed' { Write-Host " >> File renamed: $($String)" }
+    Default {}
+  }
+}
+
+function OutputConversionResult {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory = $true)]
+    [String]$Value
+  )
+
+  switch ($Value) {
+    'success' { Write-Host " >> $($Emojis["check"]) Conversion completed" }
+    'error' { Write-Host " >> $($Emojis["error"]) Unhandled error during conversion" }
+    'unsupported' { Write-Host " >> $($Emojis["error"]) Unsupported video type" }
     Default {}
   }
 }
