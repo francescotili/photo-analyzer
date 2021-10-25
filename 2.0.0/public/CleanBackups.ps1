@@ -28,7 +28,10 @@ Function CleanBackups {
     $UserChoice = Read-Host " >> Would you like to delete *.*_original backup files? s/n"
     switch ($UserChoice) {
       's' {
-        $WorkingPath = $WorkingFolder
+        CleanFiles $WorkingFolder
+      }
+      'n' {
+        Read-Host " >> Press enter to exit"
       }
       Default {
         # User doesn't want to delete backup files
@@ -42,7 +45,7 @@ Function CleanBackups {
     if ($UserPath -ne "" ) {
       $UserPath = $UserPath -replace '["]', ''
       if (Test-Path -Path "$UserPath") {
-        $WorkingPath = $UserPath
+        CleanFiles $UserPath
       }
       else {
         OutputUserError "invalidPath"
@@ -52,6 +55,14 @@ Function CleanBackups {
       OutputUserError "emptyPath"
     }
   }
+}
+
+function CleanFiles {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory = $true)]
+    [String]$WorkingPath
+  )
 
   $i = 0
   $a = 0
