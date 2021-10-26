@@ -3,8 +3,8 @@ Function OffsetDateTime {
     .SYNOPSIS
       This private functions take a date and offsets it with the second parameter of a UTC Offset. Returns a normal date in YYYY:MM:DD hh:mm:ss format
     
-    .PARAMETER Date
-      Required. Date to offset in YYYY:MM:DD hh:mm:ss format
+    .PARAMETER inputDate
+      Required. Date to offset
     
     .PARAMETER UTCOffset
       Required. Offset in UTC format of +/-hh:mm. Example: +01:30 or -02:00
@@ -13,21 +13,11 @@ Function OffsetDateTime {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    [String]$Date,
+    $inputDate,
 
     [Parameter(Mandatory = $true)]
     [String]$UTCOffset
   )
-
-  # Parse input date
-  $inputDate = @{
-    year   = [int]$Date.split(":")[0]
-    month  = [int]$Date.split(":")[1]
-    day    = [int]$Date.split(":")[2].split(" ")[0]
-    hour   = [int]$Date.split(" ")[2].split(":")[1]
-    minute = [int]$Date.split(":")[3]
-    second = [int]$Date.split(":")[4]
-  }
 
   # Parse offset
   $offset = @{
@@ -37,18 +27,13 @@ Function OffsetDateTime {
   }
 
   # Offset the date
-  $PSDate = Get-Date -Date "$($inputDate.year)/$($inputDate.month)/$($inputDate.day) $($inputDate.hour):$($inputDate.minute):$($inputDate.second)"
   switch ($offset.direction) {
-    '+' {
-      $PSDate += "$($offset.hour):$($offset.minute)"
-    }
-    '-' {
-      $PSDate -= "$($offset.hour):$($offset.minute)"
-    }
+    '+' { $outputDate = $inputDate.AddHours($offset.hour).AddMinutes($offset.minute) }
+    '-' { $outputDate = $inputDate.AddHours($offset.hour * -1).AddMinutes($offset.minute * -1) }
     Default {
       Write-Error -Message "Unhandled exception with Offset direction, offset is: $($offset.direction)" -ErrorAction Stop
     }
   }
 
-  return Get-Date -Date $PSDate -Format "yyyy:MM:dd HH:mm:ss"
+  return $outputDate.ToString('yyyy:MM:dd hh:mm:ss')
 }

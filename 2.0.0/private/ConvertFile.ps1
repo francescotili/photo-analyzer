@@ -79,7 +79,7 @@ function ConvertFile {
 
           # Update metadatas
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-          Write-ExifInfo $outputFile $Parsed.date
+          Write-ExifInfo $outputFile ($Parsed.date).ToString("yyyy:MM:dd hh:mm:ss")
 
           # Rename item
           RenameFile $outputFile $Parsed.fileName
@@ -122,7 +122,7 @@ function ConvertFile {
 
         # Update all dates in the metadata
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-        Write-ExifInfo $outputFile $Parsed.date
+        Write-ExifInfo $outputFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
 
         # Rename item
         RenameFile $outputFile $Parsed.fileName

@@ -36,26 +36,24 @@ Function ParseDateTime {
       $dateMatches = [regex]::Matches($exifTag.value, $datePattern)
 
       # Identify the capture groups
-      $parsedDate = @{
-        year      = $dateMatches.Groups[1].Value
-        month     = $dateMatches.Groups[2].Value
-        day       = $dateMatches.Groups[3].Value
-        hour      = $dateMatches.Groups[4].Value
-        minute    = $dateMatches.Groups[5].Value
-        second    = $dateMatches.Groups[6].Value
-        utcoffset = @{
-          direction = $dateMatches.Groups[7].Value
-          hour      = $dateMatches.Groups[8].Value
-          minute    = $dateMatches.Groups[9].Value
-        }
-      }
+      $parsedDate = Get-Date `
+        -year $dateMatches.Groups[1].Value `
+        -month $dateMatches.Groups[2].Value `
+        -day $dateMatches.Groups[3].Value `
+        -hour $dateMatches.Groups[4].Value `
+        -minute $dateMatches.Groups[5].Value `
+        -second $dateMatches.Groups[6].Value
+      
+      if ($dateMatches.Groups[8].Value -ne "") {
+        $utcOffset = "$($dateMatches.Groups[7].Value)$($dateMatches.Groups[8].Value):$($dateMatches.Groups[9].Value)"
+      } else {
+        $utcOffset = ""
+      }      
 
-      # TO DO: return the parsedDate object
-      # TO CHANGE!
       return @{
-        fileName  = "$($parsedDate.year)$($parsedDate.month)$($parsedDate.day) $($parsedDate.hour)$($parsedDate.minute)$($parsedDate.second)"
-        date      = "$($parsedDate.year):$($parsedDate.month):$($parsedDate.day) $($parsedDate.hour):$($parsedDate.minute):$($parsedDate.second)"
-        utcoffset = "$($parsedDate.utcoffset.direction)$($parsedDate.utcoffset.hour):$($parsedDate.utcoffset.minute)"
+        fileName  = $parsedDate.ToString("yyyyMMdd hhmmss")
+        date      = $parsedDate
+        utcoffset = $utcOffset
       }
     }
     else {  

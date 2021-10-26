@@ -61,15 +61,23 @@ Function Get-ExifInfo {
       if (( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) {
         # Tag exists
         $Parsed = ParseDateTime $Response
-        if ( IsValidDate $Parsed.date ) {
+        if ( IsValidDate ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss") ) {
           return $Parsed
         }
         else {
-          return ""
+          return @{
+            fileName  = ""
+            date      = ""
+            utcoffset = ""
+          }
         }        
       }
       else {
-        return ""
+        return @{
+          fileName  = ""
+          date      = ""
+          utcoffset = ""
+        }
       }
     }
     'FileModifyDate' {
@@ -78,10 +86,6 @@ Function Get-ExifInfo {
       
       # Parse data and return value
       return ParseDateTime $Response
-    }
-    Default {
-      Write-Error -Message "Invalid InfoType specified" -ErrorAction Continue
-      Break
     }
     'DateCreatedAlt' {    
       $FileType = exiftool -FileType $File
@@ -104,16 +108,28 @@ Function Get-ExifInfo {
       if (( $Response.Length -eq 53 ) -Or ( $Response.Length -eq 59)) {
         # Tag exists
         $Parsed = ParseDateTime $Response
-        if ( IsValidDate $Parsed.date ) {
+        if ( IsValidDate ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss") ) {
           return $Parsed
         }
         else {
-          return ""
+          return @{
+            fileName  = ""
+            date      = ""
+            utcoffset = ""
+          }
         }        
       }
       else {
-        return ""
+        return @{
+          fileName  = ""
+          date      = ""
+          utcoffset = ""
+        }
       }
+    }
+    Default {
+      Write-Error -Message "Invalid InfoType specified" -ErrorAction Continue
+      Break
     }
   }
 }
