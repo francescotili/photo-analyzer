@@ -14,53 +14,36 @@ Function ParseDateTime {
     [String]$Tag
   )
 
-  $Pattern = "(.*?) : (.*)"
-  
-  # Check if Tag is parsable
-  if ( $Tag -match $Pattern ) {
+  $datePattern = "(19|20\d{2})(?:[_.-:])?(0[1-9]|1[0-2])(?:[_.-:])?([0-2]\d|3[0-1]).*([0-1][0-9]|2[0-3])(?:[_.-:])?([0-5][0-9])(?:[_.-:])?([0-5][0-9])([+-])?([0-1][0-9]|2[0-4])?(?:[_.-:])?([0-5][0-9])?"
+
+  # Check if TagValue is a validDate
+  if ( $Tag -match $datePattern ) {
     # Match the tag and capture groups
-    $regMatches = [regex]::Matches($Tag, $Pattern)
+    $dateMatches = [regex]::Matches($Tag, $datePattern)
 
     # Identify the capture groups
-    $exifTag = @{
-      name  = $regMatches.Groups[1].Value
-      value = $regMatches.Groups[2].Value
+    $parsedDate = Get-Date `
+      -year $dateMatches.Groups[1].Value `
+      -month $dateMatches.Groups[2].Value `
+      -day $dateMatches.Groups[3].Value `
+      -hour $dateMatches.Groups[4].Value `
+      -minute $dateMatches.Groups[5].Value `
+      -second $dateMatches.Groups[6].Value
+    
+    if ($dateMatches.Groups[8].Value -ne "") {
+      $utcOffset = "$($dateMatches.Groups[7].Value)$($dateMatches.Groups[8].Value):$($dateMatches.Groups[9].Value)"
     }
+    else {
+      $utcOffset = ""
+    }      
 
-    # Parse the date and time
-    $datePattern = "(19|20\d{2})(?:[_.-:])?(0[1-9]|1[0-2])(?:[_.-:])?([0-2]\d|3[0-1]).*([0-1][0-9]|2[0-3])(?:[_.-:])?([0-5][0-9])(?:[_.-:])?([0-5][0-9])([+-])?([0-1][0-9]|2[0-4])?(?:[_.-:])?([0-5][0-9])?"
-
-    # Check if TagValue is a validDate
-    if ( $exifTag.value -match $datePattern ) {
-      # Match the tag and capture groups
-      $dateMatches = [regex]::Matches($exifTag.value, $datePattern)
-
-      # Identify the capture groups
-      $parsedDate = Get-Date `
-        -year $dateMatches.Groups[1].Value `
-        -month $dateMatches.Groups[2].Value `
-        -day $dateMatches.Groups[3].Value `
-        -hour $dateMatches.Groups[4].Value `
-        -minute $dateMatches.Groups[5].Value `
-        -second $dateMatches.Groups[6].Value
-      
-      if ($dateMatches.Groups[8].Value -ne "") {
-        $utcOffset = "$($dateMatches.Groups[7].Value)$($dateMatches.Groups[8].Value):$($dateMatches.Groups[9].Value)"
-      } else {
-        $utcOffset = ""
-      }      
-
-      return @{
-        fileName  = $parsedDate.ToString("yyyyMMdd hhmmss")
-        date      = $parsedDate
-        utcoffset = $utcOffset
-      }
-    }
-    else {  
-      Write-Host "The specified tag contains no date/time information!"
+    return @{
+      fileName  = $parsedDate.ToString("yyyyMMdd hhmmss")
+      date      = $parsedDate
+      utcoffset = $utcOffset
     }
   }
-  else {
-    Write-Host "The specified tag is not a valid exifTool tag!"
+  else {  
+    Write-Host "The specified tag contains no date/time information!"
   }
 }

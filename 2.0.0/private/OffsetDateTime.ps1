@@ -35,5 +35,5 @@ Function OffsetDateTime {
     }
   }
 
-  return $outputDate.ToString('yyyy:MM:dd hh:mm:ss')
+  return $outputDate
 }

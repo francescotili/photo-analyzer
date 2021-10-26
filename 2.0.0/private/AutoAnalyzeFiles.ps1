@@ -260,12 +260,11 @@ function AlternativeDatesWorkflow {
       if (( $FileCreateDateAlt.date -ne "" ) -and ( $FileModifyDate.date -ne "" )) {
         # Calculate new date
         $NewDate = OffsetDateTime $FileCreateDateAlt.date $FileModifyDate.utcoffset
-        $Parsed = ParseDateTime "Offset Date : $($NewDate)"
 
         $ReturnValue = @{
           action   = "SaveMetadata"
-          date     = ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
-          filename = $Parsed.fileName
+          date     = ($NewDate.date).toString("yyyy:MM:dd hh:mm:ss")
+          filename = ($NewDate.date).toString("yyyyMMdd hhmmss")
         }
         return $ReturnValue
       }
@@ -281,7 +280,7 @@ function AlternativeDatesWorkflow {
         if ( IsValidDate $UserData ) {
           # Valid date
           # Parse customData
-          $Parsed = ParseDateTime "Manual Date : $($UserData)"
+          $Parsed = ParseDateTime $UserData
 
           $ReturnValue = @{
             action   = "SaveMetadata"
