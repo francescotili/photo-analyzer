@@ -25,6 +25,11 @@ Function Get-ExifInfo {
     [String]$InfoType
   )
 
+  # OPTIMIZATION WORKFLOW
+  # [ ] Analyze the file with Exiftool
+  # [ ] Parse the tags and search for the correct tag
+  # [ ] For every function call, return the cached value
+
   switch ($InfoType) {
     'FileType' {
       $Response = exiftool -FileType $File
