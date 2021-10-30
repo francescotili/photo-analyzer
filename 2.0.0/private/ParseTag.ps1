@@ -31,7 +31,6 @@ Function ParseTag {
   )
 
   $tagPattern = "(.*?): (.*)"
-  $returnMatches = @()
 
   for ($i = 0; $i -lt $exifData.Count; $i++) {
     if ( $exifData[$i] -match $tagPattern ) {
@@ -40,10 +39,8 @@ Function ParseTag {
 
       # If the tag matches the target tag, return the value
       if ($tagName -eq $targetTag) {
-        $returnMatches += $tagValue
+        return $tagValue
       }
     }
   }
-
-  return $returnMatches
 }
