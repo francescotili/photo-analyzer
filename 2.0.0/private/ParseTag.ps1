@@ -27,7 +27,7 @@ Function ParseTag {
     $exifData,
 
     [Parameter(Mandatory = $true)]
-    [String]$tagName
+    [String]$targetTag
   )
 
   $tagPattern = "(.*?): (.*)"
