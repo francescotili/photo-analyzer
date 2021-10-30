@@ -4,10 +4,10 @@ Function Get-ExifInfo {
       Get the specified Exif information from the specified file based on filetype.
     
     .EXAMPLE
-      Get-ExifInfo $filePath FileType
+      Get-ExifInfo $file FileType
     
     .PARAMETER File
-      Required. Complete file path for the file to analyze.
+      Required. Complete file object to analyze.
     
     .PARAMETER InfoType
       Required. What type of information do you want to retrieve:
@@ -19,7 +19,7 @@ Function Get-ExifInfo {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    [String]$File,
+    $File,
 
     [Parameter(Mandatory = $true)]
     [String]$InfoType
@@ -32,29 +32,29 @@ Function Get-ExifInfo {
 
   switch ($InfoType) {
     'FileType' {
-      $Response = exiftool -FileType $File
+      $Response = exiftool -FileType $File.fullFilePath
       return $Response.split(":")[1].Trim()
     }
-    'DateCreated' {    
-      $FileType = exiftool -FileType $File
+    'DateCreated' {
+      $FileType = exiftool -FileType $File.fullFilePath
       [String]$Extension = $FileType.split(":")[1].Trim()
 
       switch ($Extension) {
         { @("PNG") -contains $_ } {
-          $Response = exiftool -CreationTime $File
+          $Response = exiftool -CreationTime $File.fullFilePath
         }
         { @("MP4") -contains $_ } {
           # Canon use -EXIF:CreateDate as correct date and time
-          $Response = exiftool -EXIF:CreateDate $File
+          $Response = exiftool -EXIF:CreateDate $File.fullFilePath
         }
         { @("MOV") -contains $_ } {
-          $Response = exiftool -CreationDate $File
+          $Response = exiftool -CreationDate $File.fullFilePath
         }
         { @("WMV") -contains $_ } {
-          $Response = exiftool -CreationDate $File
+          $Response = exiftool -CreationDate $File.fullFilePath
         }
         { @("JPEG", "HEIC", "GIF", "AVI") -contains $_ } {
-          $Response = exiftool -DateTimeOriginal $File
+          $Response = exiftool -DateTimeOriginal $File.fullFilePath
         }
         Default {
           Write-Error -Message "File type not supported" -ErrorAction Continue
@@ -87,18 +87,18 @@ Function Get-ExifInfo {
     }
     'FileModifyDate' {
       # PNG, MOV, MP4, JPG
-      $Response = exiftool -FileModifyDate $File
+      $Response = exiftool -FileModifyDate $File.fullFilePath
       
       # Parse data and return value
       return ParseDateTime $Response
     }
-    'DateCreatedAlt' {    
-      $FileType = exiftool -FileType $File
+    'DateCreatedAlt' {
+      $FileType = exiftool -FileType $File.fullFilePath
       [String]$Extension = $FileType.split(":")[1].Trim()
 
       switch ($Extension) {
         { @("MP4") -contains $_ } {
-          $Response = exiftool -CreateDate $File
+          $Response = exiftool -CreateDate $File.fullFilePath
         }
         { @("JPEG", "HEIC", "GIF", "PNG", "MOV", "WMV") -contains $_ } {
           $Response = ""

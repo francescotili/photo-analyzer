@@ -36,7 +36,7 @@ Function AutoAnalyzeFiles {
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-        $Parsed = Get-ExifInfo $currentFile.fullFilePath "DateCreated"
+        $Parsed = Get-ExifInfo $currentFile "DateCreated"
 
         if ( $Parsed.date -eq "") {
           # Creation date not detected
@@ -66,7 +66,7 @@ Function AutoAnalyzeFiles {
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
-            $altWorkflow = AlternativeDatesWorkflow $currentFile.fullFilePath
+            $altWorkflow = AlternativeDatesWorkflow $currentFile
             if ( $altWorkflow.action -eq "SaveMetadata" ) {
               # Update all dates in the metadata
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
@@ -109,7 +109,7 @@ Function AutoAnalyzeFiles {
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-        $Parsed = Get-ExifInfo $newFile.fullFilePath "DateCreated"
+        $Parsed = Get-ExifInfo $newFile "DateCreated"
 
         if ( $Parsed.date -eq "") {
           # Creation date not detected
@@ -138,7 +138,7 @@ Function AutoAnalyzeFiles {
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
-            $altWorkflow = AlternativeDatesWorkflow $newFile.fullFilePath
+            $altWorkflow = AlternativeDatesWorkflow $newFile
             if ( $altWorkflow.action -eq "SaveMetadata" ) {
               # Update all dates in the metadata
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
@@ -189,8 +189,8 @@ function AlternativeDatesWorkflow {
     .SYNOPSIS
       Manage the workflow when the file need alternative dates searching
     
-    .PARAMETER FullFilePath
-      The file path to be processed
+    .PARAMETER File
+      The file object to be processed
     
     .RETURNS
       The action to be done and date selected
@@ -199,13 +199,13 @@ function AlternativeDatesWorkflow {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    [String]$FullFilePath
+    $File
   )
 
   $ReturnValue = "" | Select-Object -Property action, date, filename
 
-  $FileModifyDate = Get-ExifInfo $FullFilePath "FileModifyDate"
-  $FileCreateDateAlt = Get-ExifInfo $FullFilePath "DateCreatedAlt"
+  $FileModifyDate = Get-ExifInfo $File "FileModifyDate"
+  $FileCreateDateAlt = Get-ExifInfo $File "DateCreatedAlt"
 
   # Presents option to the user and wait for input
   (New-Object System.Media.SoundPlayer "$env:windir\Media\Windows Unlock.wav").Play()

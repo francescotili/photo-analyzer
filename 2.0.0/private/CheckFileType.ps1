@@ -37,7 +37,7 @@ Function CheckFileType {
   # Check if extension match and return value
   if ( $SupportedExtensions.Contains( $inputFile.extension ) ) {
     # Check if the extension is the expected based on the FileType
-    $fileType = Get-ExifInfo $inputFile.fullFilePath "FileType"
+    $fileType = Get-ExifInfo $inputFile "FileType"
     if ( $extensions[$fileType] -ceq $inputFile.extension ) {
       $ReturnValue.action = "IsValid"
     }

@@ -38,7 +38,7 @@ function ConvertFile {
   }
 
   # File details
-  $fileType = Get-ExifInfo $inputFile.fullFilePath "FileType"
+  $fileType = Get-ExifInfo $inputFile "FileType"
   $backupExtension = "$($inputFile.extension)_original"
 
   # Check if extension match and run the conversion
@@ -63,7 +63,7 @@ function ConvertFile {
       # Read metadata from input file
       OutputCheckCreationDate "analyzing"
       Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-      $Parsed = Get-ExifInfo $inputFile.fullFilePath "DateCreated"
+      $Parsed = Get-ExifInfo $inputFile "DateCreated"
 
       if ( $Parsed -eq "") {
         # Creation date not detected
@@ -95,7 +95,7 @@ function ConvertFile {
 
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
 
-          $altWorkflow = AlternativeDatesWorkflow $inputFile.fullFilePath
+          $altWorkflow = AlternativeDatesWorkflow $inputFile
           if ( $altWorkflow.action -eq "SaveMetadata" ) {
             # Update all dates in the metadata
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
