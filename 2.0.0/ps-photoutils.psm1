@@ -25,6 +25,7 @@ $global:Emojis = @{
 . $PSScriptRoot\private\GetExifInfo.ps1
 . $PSScriptRoot\private\WriteExifInfo.ps1
 . $PSScriptRoot\private\ConvertFile.ps1
+. $PSScriptRoot\private\ParseTag.ps1
 
 # PUBLIC FUNCTIONS
 . $PSScriptRoot\public\PhotoAnalyzerAuto.ps1
