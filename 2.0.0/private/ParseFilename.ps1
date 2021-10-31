@@ -19,31 +19,22 @@ Function ParseFilename {
 
   # Check if filename is parsable
   if ( $filename -match $pattern ) {
-    # We have a match
     # Match the filename with pattern
     $regMatches = [regex]::Matches($filename, $pattern)
 
     # Identify the capture groups
-    $year = $regMatches.Groups[1].Value
-    $month = $regMatches.Groups[2].Value
-    $day = $regMatches.Groups[3].Value
-    $hour = $regMatches.Groups[4].Value
-    $minute = $regMatches.Groups[5].Value
-    $second = $regMatches.Groups[6].Value
+    $returnDate = Get-Date `
+    -Year $regMatches.Groups[1].Value `
+    -Month $regMatches.Groups[2].Value `
+    -Day $regMatches.Groups[3].Value `
+    -Hour $regMatches.Groups[4].Value `
+    -Minute $regMatches.Groups[5].Value `
+    -Second $regMatches.Groups[6].Value
 
-    # Return date in format "YYYY:MM:dd HH:mm:ss"
-    $returnDate = "$($year):$($month):$($day) $($hour):$($minute):$($second)"
-
-    if ( IsValidDate $returnDate ) {
-      # Valid parsed date
-      return $returnDate
-    }
-    else {
-      return ""
-    }
+    return $returnDate
   }
   else {
     # Parsing not possible
-    return ""
+    return Get-Date -Date "01-01-1800 00:00:00"
   }
 }

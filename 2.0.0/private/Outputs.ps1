@@ -102,7 +102,6 @@ function OutputCheckCreationDate {
   switch ($Value) {
     'valid' { Write-Host " >> $($Emojis["check"]) Creation date valid" }
     'undefined' { Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..." }
-    'analyzing' { Write-Host " >> Analyzing original file metadatas..." }
     Default {}
   }
 }

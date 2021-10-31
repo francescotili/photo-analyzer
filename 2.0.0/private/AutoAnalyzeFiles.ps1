@@ -24,39 +24,33 @@ Function AutoAnalyzeFiles {
       extension    = (GetFilename( Split-Path -Path $_.FullName -Leaf )).extension
     }
 
-    # Analyze real file type
+    # Analyze File metadatas
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
     Write-Host $currentFile.fullFilePath -Background Yellow -Foreground Black
+    $exifData = Get-ExifInfo $currentFile
 
-    $fileTypeCheck = CheckFileType $currentFile
+    $fileTypeCheck = CheckFileType $currentFile $exifData
     switch ( $fileTypeCheck.action ) {
       'IsValid' {
         # File type and extension coincide
-        OutputCheckFileType "valid" $fileInfos.extension
+        OutputCheckFileType "valid" $currentFile.extension
 
-        # Searching for creation date
-        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-        $Parsed = Get-ExifInfo $currentFile.fullFilePath "DateCreated"
-
-        if ( $Parsed.date -eq "") {
+        # Creation date workflow
+        if ( $exifData.createDate -eq $defaultDate ) {
           # Creation date not detected
           OutputCheckCreationDate "undefined"
 
-          # Parse date from filename
-          $parsedDateTime = ParseFilename $currentFile.name
-          if ( $parsedDateTime -ne "" ) {
+          # Parsed data workflow
+          if ( $exifData.parsedDate -ne $defaultDate ) {
             # Valid parsed date
             OutputParsing "parsed"
 
-            # Parse parsedData
-            $Parsed = ParseDateTime $parsedDateTime
-
             # Update metadatas
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-            Write-ExifInfo $currentFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+            Write-ExifInfo $currentFile ($exifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
             # Rename item
-            RenameFile $currentFile $Parsed.fileName
+            RenameFile $currentFile ($exifData.parsedDate).toString("yyyyMMdd HHmmss")
             OutputFileResult "success"
             Write-Host ""
           }
@@ -64,16 +58,17 @@ Function AutoAnalyzeFiles {
             # No parsing possible
             OutputParsing "nomatch"
 
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$Status%"
 
-            $altWorkflow = AlternativeDatesWorkflow $currentFile.fullFilePath
-            if ( $altWorkflow.action -eq "SaveMetadata" ) {
+            $altDate = AlternativeDatesWorkflow $currentFile $exifData
+
+            if ( $altDate -ne $defaultDate ) {
               # Update all dates in the metadata
-              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-              Write-ExifInfo $currentFile $altWorkflow.date
+              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+              Write-ExifInfo $currentFile $altDate.toString("yyyy:MM:dd HH:mm:ss")
 
               # Rename item
-              RenameFile $currentFile $altWorkflow.filename
+              RenameFile $currentFile $altDate.toString("yyyyMMdd HHmmss")
               OutputFileResult "success"
             }
             else {
@@ -87,11 +82,11 @@ Function AutoAnalyzeFiles {
           OutputCheckCreationDate "valid"
 
           # Update all dates in the metadata
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-          Write-ExifInfo $currentFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+          Write-ExifInfo $currentFile ($exifData.createDate).toString("yyyy:MM:dd HH:mm:ss")
 
           # Rename file
-          RenameFile $currentFile $Parsed.fileName
+          RenameFile $currentFile ($exifData.createDate).toString("yyyyMMdd HHmmss")
           OutputFileResult "success"
         }
         Write-Host ""
@@ -99,7 +94,7 @@ Function AutoAnalyzeFiles {
       'Rename' {
         # Change file extension
         # Rename file changing extension
-        OutputCheckFileType "mismatch" $fileInfos.extension
+        OutputCheckFileType "mismatch" $currentFile.extension
         ChangeExtension $currentFile.fullFilePath $fileTypeCheck.extension
 
         # Define the new file
@@ -108,44 +103,40 @@ Function AutoAnalyzeFiles {
         $newFile.fullFilePath = "$($newFile.path)\$($newFile.name).$($newFile.extension)"
 
         # Searching for creation date
-        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-        $Parsed = Get-ExifInfo $newFile.fullFilePath "DateCreated"
+        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading metadata from renamed file ..." -Status "$($Status)%"
+        $newExifData = Get-ExifInfo $newFile
 
-        if ( $Parsed.date -eq "") {
+        if ( $newExifData.createDate -eq $defaultDate) {
           # Creation date not detected
           OutputCheckCreationDate "undefined"
 
           # Parse date from filename
-          $parsedDateTime = ParseFilename $newFile.name
-          if ( $parsedDateTime -ne "" ) {
+          if ( $newExifData.parsedDate -ne $defaultDate ) {
             # Valid parsed date
             OutputParsing "parsed"
 
-            # Parse parsedData
-            $Parsed = ParseDateTime $parsedDateTime
-
             # Update metadatas
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-            Write-ExifInfo $newFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+            Write-ExifInfo $newFile ($newExifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
             # Rename item
-            RenameFile $newFile $Parsed.fileName
+            RenameFile $newFile ($newExifData.parsedDate).toString("yyyyMMdd HHmmss")
             OutputFileResult "success"
           }
           else {
             # No parsing possible
             OutputParsing "nomatch"
 
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$Status%"
 
-            $altWorkflow = AlternativeDatesWorkflow $newFile.fullFilePath
-            if ( $altWorkflow.action -eq "SaveMetadata" ) {
+            $altDate = AlternativeDatesWorkflow $newFile
+            if ( $altDate -ne $defaultDate ) {
               # Update all dates in the metadata
-              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-              Write-ExifInfo $newFile $altWorkflow.date
+              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+              Write-ExifInfo $newFile $altDate.toString("yyyy:MM:dd HH:mm:ss")
 
               # Rename item
-              RenameFile $newFile $altWorkflow.fileName
+              RenameFile $newFile $altDate.toString("yyyyMMdd HHmmss")
               OutputFileResult "success"
             }
             else {
@@ -159,11 +150,11 @@ Function AutoAnalyzeFiles {
           OutputCheckCreationDate "valid"
 
           # Update all dates in the metadata
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-          Write-ExifInfo $newFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+          Write-ExifInfo $newFile ($newExifData.createDate).toString("yyyy:MM:dd HH:mm:ss")
 
           # Rename file
-          RenameFile $newFile $Parsed.fileName
+          RenameFile $newFile ($newExifData.createDate).toString("yyyyMMdd HHmmss")
           OutputFileResult "success"
         }
         Write-Host ""
@@ -172,8 +163,9 @@ Function AutoAnalyzeFiles {
         OutputCheckFileType "convert"
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Converting file ..." -Status "$($Status)%"
 
+        # TO DO !!!
         # Convert file
-        ConvertFile $currentFile
+        ConvertFile $currentFile $exifData
       }
       Default {
         # File probably not supported
@@ -189,8 +181,11 @@ function AlternativeDatesWorkflow {
     .SYNOPSIS
       Manage the workflow when the file need alternative dates searching
     
-    .PARAMETER FullFilePath
-      The file path to be processed
+    .PARAMETER File
+      The file object to be processed
+    
+    .PARAMETER ExifData
+      The complete exifData response
     
     .RETURNS
       The action to be done and date selected
@@ -199,109 +194,71 @@ function AlternativeDatesWorkflow {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    [String]$FullFilePath
+    $File,
+
+    [Parameter(Mandatory = $true)]
+    $exifData
   )
 
-  $ReturnValue = "" | Select-Object -Property action, date, filename
-
-  $FileModifyDate = Get-ExifInfo $FullFilePath "FileModifyDate"
-  $FileCreateDateAlt = Get-ExifInfo $FullFilePath "DateCreatedAlt"
+  $ReturnValue = $defaultDate
+  $menu = @{}
 
   # Presents option to the user and wait for input
   (New-Object System.Media.SoundPlayer "$env:windir\Media\Windows Unlock.wav").Play()
   Write-Host ""
   Write-Host " >> >> What date would you like to use?"
-  if ( $FileModifyDate.date -ne "" ) {
-    Write-Host "     1 | $($Emojis["calendar"]) File Modified Date/Time: $($FileModifyDate.date)$($FileModifyDate.utcoffset)"
+
+  if (($exifData.altDates).Count -gt 0) {
+    # We have at least one Alternative Date
+    for ($i = 1; $i -lt ($exifData.altDates).Count; $i++) {
+      Write-Host "     $($i) | $($Emojis["calendar"]) Alternative Date/Time: $($exifData.altDates[$i])"
+      $menu.Add($i, $exifData.altDates[$i])
+    }
   }
-  if ( $FileCreateDateAlt.date -ne "" ) {
-    Write-Host "     2 | $($Emojis["calendar"]) Alternative Creation Date/Time: $($FileCreateDateAlt.date)"
+  if ( $exifData.modifyDate -ne $defaultDate ) {
+    Write-Host "     $($menu.Count + 1) | $($Emojis["calendar"]) File Modified Date/Time: $($exifData.modifyDate) (UTC $($exifData.utcoffset))"
+    $menu.Add(($menu.Count + 1), $exifData.modifyDate)
   }
-  if (( $FileCreateDateAlt.date -ne "" ) -and ( $FileModifyDate.date -ne "" )) {
-    Write-Host "     3 | $($Emojis["time"]) Offset alternative Creation Date/Time with UTC from Modify Date/Time: $($FileModifyDate.utcoffset)"
-  }
-  Write-Host "     4 | $($Emojis["pen"]) Manually insert date"
-  $UserSelection = Read-Host " >> >> Insert number"
+  # TO DO: Add functionality for UTC Offset?
+  Write-Host "     $($menu.Count + 1) | $($Emojis["pen"]) Manually insert date"
+  $menu.Add(($menu.Count + 1), $defaultDate)
+
+  $userSelection = Read-Host " >> >> Insert number"
   
-  # Evaluate workflow and return what needs to be done
-  switch ($UserSelection) {
-    '1' {
-      # User would like to use ModifyDate
-      if ( $FileModifyDate.date -ne "" ) {
-        $ReturnValue = @{
-          action   = "SaveMetadata"
-          date     = ($FileModifyDate.date).toString("yyyy:MM:dd hh:mm:ss")
-          filename = $FileModifyDate.filename
-        }
-        return $ReturnValue
+  # Validate input
+  if ( $userSelection -match '^\d+$' ) {
+    [int]$choice = $userSelection
+    if ($choice -le $menu.Count ) {
+      # Evaluate workflow and return what needs to be done
+      if ($menu.Item($choice) -ne $defaultDate ) {
+        $ReturnValue = $menu.Item($choice)
       }
       else {
-        # Invalid choice
-        OutputUserError "invalidChoice"
-      }
-    }
-    '2' {
-      # User would like to use CreateDate alternative
-      if ( $FileCreateDateAlt.date -ne "" ) {
-        $ReturnValue = @{
-          action   = "SaveMetadata"
-          date     = ($FileCreateDateAlt.date).toString("yyyy:MM:dd hh:mm:ss")
-          filename = $FileCreateDateAlt.filename
-        }
-        return $ReturnValue
-      }
-      else {
-        # Invalid choice
-        OutputUserError "invalidChoice"
-      }
-    }
-    '3' {
-      # User would like to use CreateDate but with offset
-      if (( $FileCreateDateAlt.date -ne "" ) -and ( $FileModifyDate.date -ne "" )) {
-        # Calculate new date
-        $NewDate = OffsetDateTime $FileCreateDateAlt.date $FileModifyDate.utcoffset
-
-        $ReturnValue = @{
-          action   = "SaveMetadata"
-          date     = ($NewDate.date).toString("yyyy:MM:dd hh:mm:ss")
-          filename = ($NewDate.date).toString("yyyyMMdd hhmmss")
-        }
-        return $ReturnValue
-      }
-      else {
-        # Invalid choice
-        OutputUserError "invalidChoice"
-      }
-    }
-    '4' {
-      # User wants to specify a custom date
-      $UserData = Read-Host " >> >> Insert date (YYYY:MM:DD hh:mm:ss)"
-      if ( $userData -ne "" ) {
-        if ( IsValidDate $UserData ) {
-          # Valid date
-          # Parse customData
-          $Parsed = ParseDateTime $UserData
-
-          $ReturnValue = @{
-            action   = "SaveMetadata"
-            date     = ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
-            filename = $Parsed.fileName
+        $UserData = Read-Host " >> >> Insert date (year, month, day, hour, minute, second)"
+        if ( $userData -ne "" ) {
+          if ( IsValidDate $UserData ) {
+            # Valid date, parse customData
+            $Parsed = ParseDateTime $UserData
+            $ReturnValue = $Parsed.date
           }
-          return $ReturnValue
+          else {
+            # Invalid date
+            OutputUserError "invalidDate"
+          }
         }
         else {
-          # Invalid date
-          OutputUserError "invalidDate"
+          # No date specified
+          OutputUserError "emptyDate"
         }
       }
-      else {
-        # No date specified
-        OutputUserError "emptyDate"
-      }
     }
-    Default {
-      # Invalid choice
-      OutputUserError "emptyChoice"
+    else {
+      OutputUserError "invalidChoice"
     }
   }
+  else {
+    OutputUserError "invalidChoice"
+  }
+
+  return $ReturnValue
 }

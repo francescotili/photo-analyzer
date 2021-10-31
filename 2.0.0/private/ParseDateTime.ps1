@@ -5,7 +5,7 @@ Function ParseDateTime {
       Returns a custom object with 'fileName' and 'date' properties
     
     .PARAMETER Tag
-      Required. The complete tag returned by a single exiftool query
+      Required. A single string containing the date/time to be parsed
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
@@ -35,7 +35,7 @@ Function ParseDateTime {
     }
     else {
       $utcOffset = ""
-    }      
+    }
 
     return @{
       fileName  = $parsedDate.ToString("yyyyMMdd hhmmss")
@@ -43,7 +43,11 @@ Function ParseDateTime {
       utcoffset = $utcOffset
     }
   }
-  else {  
-    Write-Host "The specified tag contains no date/time information!"
+  else {
+    return @{
+      fileName  = ""
+      date      = $defaultDate
+      utcoffset = ""
+    }
   }
 }
