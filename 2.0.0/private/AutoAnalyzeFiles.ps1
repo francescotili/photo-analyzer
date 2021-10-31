@@ -27,7 +27,7 @@ Function AutoAnalyzeFiles {
     # Analyze File metadatas
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
     Write-Host $currentFile.fullFilePath -Background Yellow -Foreground Black
-    $exifData = Get-ExifInfo $currentFile "All"
+    $exifData = Get-ExifInfo $currentFile
 
     $fileTypeCheck = CheckFileType $currentFile $exifData
     switch ( $fileTypeCheck.action ) {
@@ -104,7 +104,7 @@ Function AutoAnalyzeFiles {
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading metadata from renamed file ..." -Status "$($Status)%"
-        $newExifData = Get-ExifInfo $newFile "All"
+        $newExifData = Get-ExifInfo $newFile
 
         if ( $newExifData.createDate -eq $defaultDate) {
           # Creation date not detected

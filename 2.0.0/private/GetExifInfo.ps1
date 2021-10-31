@@ -8,21 +8,12 @@ Function Get-ExifInfo {
     
     .PARAMETER File
       Required. Complete file object to analyze.
-    
-    .PARAMETER InfoType
-      Required. What type of information do you want to retrieve:
-      - 'FileType' -> Returns the exiftool detected fileType
-      - 'DateCreated' -> Returns the correct Tag for DateTime created
-      - 'FileModifyDate' -> Returns the modifyDateTime for the file
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    $File,
-
-    [Parameter(Mandatory = $true)]
-    [String]$InfoType
+    $File
   )
 
   # Initialize default variables
@@ -128,66 +119,7 @@ Function Get-ExifInfo {
     $returnValues.altDates = $returnValues.altDates | Sort-Object | Select-Object -Unique
   }
 
-  switch ($InfoType) {
-    'FileType' {
-      return $returnValues.fileType
-    }
-    'DateCreated' {
-      if ( $returnValues.createDate -ne $defaultDate ) {
-        return @{
-          fileName  = ($returnValues.createDate).toString("yyyyMMdd HHmmss")
-          date      = $returnValues.createDate
-          utcoffset = $returnValues.utcoffset
-        }
-      }
-      else {
-        return @{
-          fileName  = ""
-          date      = ""
-          utcoffset = ""
-        }
-      }
-    }
-    'FileModifyDate' {
-      if ( $returnValues.modifyDate -ne $defaultDate ) {
-        return @{
-          fileName  = ($returnValues.modifyDate).toString("yyyyMMdd HHmmss")
-          date      = $returnValues.modifyDate
-          utcoffset = $returnValues.utcoffset
-        }
-      }
-      else {
-        return @{
-          fileName  = ""
-          date      = ""
-          utcoffset = ""
-        }
-      }
-    }
-    'DateCreatedAlt' {
-      if ( $returnValues.altDates.Count -ne 0 ) {
-        return @{
-          fileName  = ($returnValues.altDates[0]).toString("yyyyMMdd HHmmss")
-          date      = $returnValues.altDates[0]
-          utcoffset = $returnValues.utcoffset
-        }
-      }
-      else {
-        return @{
-          fileName  = ""
-          date      = ""
-          utcoffset = ""
-        }
-      }
-    }
-    'All' {
-      return $returnValues
-    }
-    Default {
-      Write-Error -Message "Invalid InfoType specified" -ErrorAction Continue
-      Break
-    }
-  }
+  return $returnValues
 }
 
 enum DeviceType { Apple; Android; Canon; Unknown }
