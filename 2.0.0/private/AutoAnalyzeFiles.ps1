@@ -17,12 +17,7 @@ Function AutoAnalyzeFiles {
     $Status = "{0:N0}" -f $a
 
     # Variables for the file
-    $currentFile = @{
-      fullFilePath = $_.FullName
-      path         = Split-Path -Path $_.FullName -Parent
-      name         = (GetFilename( Split-Path -Path $_.FullName -Leaf )).fileName
-      extension    = (GetFilename( Split-Path -Path $_.FullName -Leaf )).extension
-    }
+    $currentFile = [FileInfo]::New($_.FullName)
 
     # Analyze File metadatas
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
@@ -261,4 +256,24 @@ function AlternativeDatesWorkflow {
   }
 
   return $ReturnValue
+}
+
+class FileInfo {
+  # Class properties
+  [String]$fullFilePath
+  [String]$path
+  [String]$name
+  [String]$extension
+
+  FileInfo( [String]$fullFilePath ) {
+    $this.fullFilePath = $fullFilePath
+    $this.path = Split-Path -Path $fullFilePath -Parent
+
+    $pattern = "(.+?)(\.[^.]*$|$)"
+    $fileName = Split-Path -Path $fullFilePath -Leaf
+    $regMatches = [regex]::Matches($fileName, $pattern)
+
+    $this.name = $regMatches.Groups[1].Value
+    $this.extension = ($regMatches.Groups[2].Value).replace('.', '')
+  }
 }
