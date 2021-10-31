@@ -129,7 +129,7 @@ Function AutoAnalyzeFiles {
 
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$Status%"
 
-            $altDate = AlternativeDatesWorkflow $newFile
+            $altDate = AlternativeDatesWorkflow $newFile $exifData
             if ( $altDate -ne $defaultDate ) {
               # Update all dates in the metadata
               Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
