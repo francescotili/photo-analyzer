@@ -180,6 +180,9 @@ Function Get-ExifInfo {
         }
       }
     }
+    'All' {
+      return $returnValues
+    }
     Default {
       Write-Error -Message "Invalid InfoType specified" -ErrorAction Continue
       Break

@@ -9,12 +9,18 @@ function ConvertFile {
     
     .PARAMETER inputFile
       The file object to convert
+    
+    .PARAMETER exifData
+      The complete exifData of the input file
   #>
 
   [CmdletBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    $inputFile
+    $inputFile,
+
+    [Parameter(Mandatory = $true)]
+    $exifData
   )
 
   # Conversion settings
@@ -38,51 +44,42 @@ function ConvertFile {
   }
 
   # File details
-  $fileType = Get-ExifInfo $inputFile "FileType"
   $backupExtension = "$($inputFile.extension)_original"
 
   # Check if extension match and run the conversion
-  if ( $conversionFormat.Contains( $fileType )) {
+  if ( $conversionFormat.Contains( $exifData.fileType )) {
     # We have a match
     # Define the output file
     $outputFile = @{
       path         = $inputFile.path
       name         = $inputFile.name
-      extension    = $conversionFormat[$fileType]
-      fullFilePath = "$($inputFile.path)\$($inputFile.name).$($conversionFormat[$fileType])"
+      extension    = $conversionFormat[$exifData.fileType]
+      fullFilePath = "$($inputFile.path)\$($inputFile.name).$($conversionFormat[$exifData.fileType])"
     }
 
     # Convert the file  
     # 2> $null is to hide HandBrakeCLI useless output
-    HandBrakeCLI -i $inputFile.fullFilePath -o $outputFile.fullFilePath -d $conversionSettings[$fileType].decomb -e $conversionSettings[$fileType].encoder -q $conversionSettings[$fileType].videoQuality -B $conversionSettings[$fileType].audioBitrate 2> $null
+    HandBrakeCLI -i $inputFile.fullFilePath -o $outputFile.fullFilePath -d $conversionSettings[$exifData.fileType].decomb -e $conversionSettings[$exifData.fileType].encoder -q $conversionSettings[$exifData.fileType].videoQuality -B $conversionSettings[$exifData.fileType].audioBitrate 2> $null
 
     # Check if file has been created
     if ( Test-Path $outputFile.fullFilePath -PathType Leaf ) {
       OutputConversionResult "success"
 
-      # Read metadata from input file
-      OutputCheckCreationDate "analyzing"
-      Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
-      $Parsed = Get-ExifInfo $inputFile "DateCreated"
-
-      if ( $Parsed -eq "") {
+      if ( $exifData.createDate -eq $defaultDate ) {
         # Creation date not detected
         OutputCheckCreationDate "undefined"
 
         # Parse date from filename
-        $parsedDateTime = ParseFilename $inputFile.name
-        if ( $parsedDateTime -ne $defaultDate ) {
+        if ( $exifData.parsedDate -ne $defaultDate ) {
           # Valid parsed date
           OutputParsing "parsed"
-          # Parse parsedData
-          $Parsed = ParseDateTime $parsedDateTime.toString("yyyy:MM:dd hh:mm:ss")
 
           # Update metadatas
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-          Write-ExifInfo $outputFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+          Write-ExifInfo $outputFile ($exifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
           # Rename item
-          RenameFile $outputFile $Parsed.fileName
+          RenameFile $outputFile ($exifData.fileName).toString("yyyyMMdd HHmmss")
 
           # Make a backup of input file
           ChangeExtension $inputFile.fullFilePath $backupExtension
@@ -93,16 +90,17 @@ function ConvertFile {
           # No parsing possible
           OutputParsing "nomatch"
 
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing modify date ..." -Status "$Status%"
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$Status%"
 
-          $altWorkflow = AlternativeDatesWorkflow $inputFile
-          if ( $altWorkflow.action -eq "SaveMetadata" ) {
+          $altDate = AlternativeDatesWorkflow $inputFile $exifData
+
+          if ( $altDate -ne $defaultDate ) {
             # Update all dates in the metadata
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-            Write-ExifInfo $outputFile $altWorkflow.date
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+            Write-ExifInfo $outputFile $altDate.toString("yyyy:MM:dd HH:mm:ss")
 
             # Rename item
-            RenameFile $outputFile $altWorkflow.fileName
+            RenameFile $outputFile $altDate.toString("yyyyMMdd HHmmss")
   
             # Make a backup of input file
             ChangeExtension $inputFile.fullFilePath $backupExtension
@@ -121,11 +119,11 @@ function ConvertFile {
         OutputCheckCreationDate "valid"
 
         # Update all dates in the metadata
-        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-        Write-ExifInfo $outputFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
+        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+        Write-ExifInfo $outputFile ($exifData.createDate).toString("yyyy:MM:dd HH:mm:ss")
 
         # Rename item
-        RenameFile $outputFile $Parsed.fileName
+        RenameFile $outputFile ($exifData.createDate).toString("yyyyMMdd HHmmss")
 
         # Make a backup of input file
         ChangeExtension $inputFile.fullFilePath $backupExtension

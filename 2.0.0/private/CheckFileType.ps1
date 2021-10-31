@@ -8,12 +8,18 @@ Function CheckFileType {
     
     .PARAMETER inputFile
       Required. A "FILE" object
+    
+    .PARAMETER exifData
+      Required. The complete exifData object
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $true)]
-    $inputFile
+    $inputFile,
+
+    [Parameter(Mandatory = $true)]
+    $exifData
   )
   
   $ReturnValue = "" | Select-Object -Property action, extension
@@ -37,16 +43,15 @@ Function CheckFileType {
   # Check if extension match and return value
   if ( $SupportedExtensions.Contains( $inputFile.extension ) ) {
     # Check if the extension is the expected based on the FileType
-    $fileType = Get-ExifInfo $inputFile "FileType"
-    if ( $extensions[$fileType] -ceq $inputFile.extension ) {
+    if ( $extensions[$exifData.fileType] -ceq $inputFile.extension ) {
       $ReturnValue.action = "IsValid"
     }
-    elseif ( $conversions.Contains($fileType)) {
+    elseif ( $conversions.Contains($exifData.fileType)) {
       $ReturnValue.action = "Convert"
     }
     else {
       $ReturnValue.action = "Rename"
-      $ReturnValue.extension = $extensions[$fileType]
+      $ReturnValue.extension = $extensions[$exifData.fileType]
     }
   }
 
