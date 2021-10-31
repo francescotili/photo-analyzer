@@ -14,7 +14,6 @@ $global:Emojis = @{
 . $PSScriptRoot\private\AutoAnalyzeFiles.ps1
 . $PSScriptRoot\private\ConvertFile.ps1
 . $PSScriptRoot\private\GetExifInfo.ps1
-. $PSScriptRoot\private\GetFilename.ps1
 . $PSScriptRoot\private\Helpers.ps1
 . $PSScriptRoot\private\Outputs.ps1
 . $PSScriptRoot\private\Parsers.ps1
