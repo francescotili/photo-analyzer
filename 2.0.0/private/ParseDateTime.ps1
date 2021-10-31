@@ -35,7 +35,7 @@ Function ParseDateTime {
     }
     else {
       $utcOffset = ""
-    }      
+    }
 
     return @{
       fileName  = $parsedDate.ToString("yyyyMMdd hhmmss")
@@ -44,6 +44,10 @@ Function ParseDateTime {
     }
   }
   else {
-    Write-Host "The specified tag contains no date/time information!"
+    return @{
+      fileName  = ""
+      date      = $defaultDate
+      utcoffset = ""
+    }
   }
 }

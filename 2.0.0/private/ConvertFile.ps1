@@ -46,9 +46,9 @@ function ConvertFile {
     # We have a match
     # Define the output file
     $outputFile = @{
-      path = $inputFile.path
-      name = $inputFile.name
-      extension = $conversionFormat[$fileType]
+      path         = $inputFile.path
+      name         = $inputFile.name
+      extension    = $conversionFormat[$fileType]
       fullFilePath = "$($inputFile.path)\$($inputFile.name).$($conversionFormat[$fileType])"
     }
 
@@ -71,15 +71,15 @@ function ConvertFile {
 
         # Parse date from filename
         $parsedDateTime = ParseFilename $inputFile.name
-        if ( $parsedDateTime -ne "" ) {
+        if ( $parsedDateTime -ne $defaultDate ) {
           # Valid parsed date
           OutputParsing "parsed"
           # Parse parsedData
-          $Parsed = ParseDateTime $parsedDateTime
+          $Parsed = ParseDateTime $parsedDateTime.toString("yyyy:MM:dd hh:mm:ss")
 
           # Update metadatas
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
-          Write-ExifInfo $outputFile ($Parsed.date).ToString("yyyy:MM:dd hh:mm:ss")
+          Write-ExifInfo $outputFile ($Parsed.date).toString("yyyy:MM:dd hh:mm:ss")
 
           # Rename item
           RenameFile $outputFile $Parsed.fileName
@@ -142,8 +142,8 @@ function ConvertFile {
   }
   else {
     # Unsupported extension
-      OutputConversionResult "unsupported"
-      OutputFileResult "skip"
-      Write-Host ""
+    OutputConversionResult "unsupported"
+    OutputFileResult "skip"
+    Write-Host ""
   }
 }

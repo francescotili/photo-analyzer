@@ -32,7 +32,7 @@ Function AutoAnalyzeFiles {
     switch ( $fileTypeCheck.action ) {
       'IsValid' {
         # File type and extension coincide
-        OutputCheckFileType "valid" $fileInfos.extension
+        OutputCheckFileType "valid" $currentFile.extension
 
         # Searching for creation date
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading creation date ..." -Status "$($Status)%"
@@ -44,12 +44,12 @@ Function AutoAnalyzeFiles {
 
           # Parse date from filename
           $parsedDateTime = ParseFilename $currentFile.name
-          if ( $parsedDateTime -ne "" ) {
+          if ( $parsedDateTime -ne $defaultDate ) {
             # Valid parsed date
             OutputParsing "parsed"
 
             # Parse parsedData
-            $Parsed = ParseDateTime $parsedDateTime
+            $Parsed = ParseDateTime $parsedDateTime.toString("yyyy:MM:dd hh:mm:ss")
 
             # Update metadatas
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
@@ -99,7 +99,7 @@ Function AutoAnalyzeFiles {
       'Rename' {
         # Change file extension
         # Rename file changing extension
-        OutputCheckFileType "mismatch" $fileInfos.extension
+        OutputCheckFileType "mismatch" $currentFile.extension
         ChangeExtension $currentFile.fullFilePath $fileTypeCheck.extension
 
         # Define the new file
@@ -117,12 +117,12 @@ Function AutoAnalyzeFiles {
 
           # Parse date from filename
           $parsedDateTime = ParseFilename $newFile.name
-          if ( $parsedDateTime -ne "" ) {
+          if ( $parsedDateTime -ne $defaultDate ) {
             # Valid parsed date
             OutputParsing "parsed"
 
             # Parse parsedData
-            $Parsed = ParseDateTime $parsedDateTime
+            $Parsed = ParseDateTime $parsedDateTime.toString("yyyy:MM:dd hh:mm:ss")
 
             # Update metadatas
             Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Updating metadata ..." -Status "$Status%"
