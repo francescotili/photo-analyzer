@@ -211,12 +211,12 @@ function AlternativeDatesWorkflow {
   if (($exifData.altDates).Count -gt 0) {
     # We have at least one Alternative Date
     for ($i = 1; $i -lt ($exifData.altDates).Count; $i++) {
-      Write-Host "     $($i) | $($Emojis["calendar"]) Alternative Date/Time: $($exifData.altDates[$i])"
+      Write-Host "     $($i) | $($Emojis["calendar"]) Alternative date/time     : $($exifData.altDates[$i].toString("yyyy:MM:dd HH:mm:ss"))"
       $menu.Add($i, $exifData.altDates[$i])
     }
   }
   if ( $exifData.modifyDate -ne $defaultDate ) {
-    Write-Host "     $($menu.Count + 1) | $($Emojis["calendar"]) File Modified Date/Time: $($exifData.modifyDate) (UTC $($exifData.utcoffset))"
+      Write-Host "     $($menu.Count + 1) | $($Emojis["calendar"]) File Modified Date/Time   : $($exifData.modifyDate.toString("yyyy:MM:dd HH:mm:ss"))"
     $menu.Add(($menu.Count + 1), $exifData.modifyDate)
   }
   # TO DO: Add functionality for UTC Offset?
