@@ -35,6 +35,9 @@ Function Get-ExifInfo {
   elseif ( (ParseTag $exifData "Make") -eq "Canon" ) {
     $returnValues.device = [DeviceType]::Canon
   }
+  elseif ( (ParseTag $exifData "Make") -eq "NIKON CORPORATION") {
+    $returnValues.device = [DeviceType]::Nikon
+  }
 
   # Parse filename
   $parsedDate = ParseFilename $File.name
@@ -52,12 +55,10 @@ Function Get-ExifInfo {
     ([DeviceType]::Apple) {
       switch ($returnValues.fileType) {
         { @("JPEG", "HEIC") -contains $_ } {
-          $createDate = ParseTagDateTime $exifData "CreateDate"
-          $returnValues.createDate = $createDate
+          $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
         }
         { @("MOV") -contains $_ } {
-          $createDate = ParseTagDateTime $exifData "CreationDate"
-          $returnValues.createDate = $createDate
+          $returnValues.createDate = ParseTagDateTime $exifData "CreationDate"
         }
         Default {}
       }
@@ -65,11 +66,10 @@ Function Get-ExifInfo {
     ([DeviceType]::Android) {
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
-          $createDate = ParseTagDateTime $exifData "CreateDate"
-          $returnValues.createDate = $createDate
+          $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
         }
         { @("MP4") -contains $_ } {
-          $returnValues.createDate = $returnValues.parsedDate
+          # No correct tag detected, fallback to parsedDate with filename
         }
         Default {}
       }
@@ -77,27 +77,44 @@ Function Get-ExifInfo {
     ([DeviceType]::Canon) {
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
-          $createDate = ParseTagDateTime $exifData "CreateDate"
-          $returnValues.createDate = $createDate
+          $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
         }
         { @("MP4") -contains $_ } {
-          $createDate = ParseTagDateTime $exifData "DateTimeOriginal"
-          $returnValues.createDate = $createDate
+          $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
+        }
+        Default {}
+      }
+    }
+    ([DeviceType]::Nikon) {
+      switch ($returnValues.fileType) {
+        { @("JPEG") -contains $_ } {
+          $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
+        }
+        { @("MP4") -contains $_ } {
+          # Not yet a tag detected, fallback to parsedDate with filename
         }
         Default {}
       }
     }
     ([DeviceType]::Unknown) {
-      $returnValues.createDate = $returnValues.parsedDate
+      switch ($returnValues.fileType) {
+        { @("JPEG", "HEIC", "GIF", "AVI", "MP4", "PNG") -contains $_ } {
+          $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
+        }
+        { @("MOV", "WMV") -contains $_ } {
+          $returnValues.createDate = ParseTagDateTime $exifData "CreationDate"
+        }
+        Default {}
+      }
     }
     Default {}
   }
 
   # Retrieve Alternative dates
   $alternativeTagNames = @(
-    "DateTimeOriginal"
     "FileCreateDate"
     "GPSDateTime"
+    "DateTimeOriginal"
     "TrackCreateDate"
     "CreateDate"
     "TrackModifyDate"
@@ -115,14 +132,14 @@ Function Get-ExifInfo {
   }
 
   # Remove duplicate Alternative dates
-  if ($returnValues.altDates.Count -gt 1 ) {
+  <# if ($returnValues.altDates.Count -gt 1 ) {
     $returnValues.altDates = $returnValues.altDates | Sort-Object | Select-Object -Unique
-  }
+  } #>
 
   return $returnValues
 }
 
-enum DeviceType { Apple; Android; Canon; Unknown }
+enum DeviceType { Apple; Android; Canon; Nikon; Unknown }
 enum FileType { JPEG; HEIC; PNG; GIF; MOV; MP4; AVI; WMV; Unknown }
 
 Class ExifData {

@@ -78,6 +78,7 @@ Function ParseTagDateTime {
   )
 
   $tagPattern = "(.*?): (.*)"
+  $returnData = $defaultDate
 
   for ($i = 0; $i -lt $exifData.Count; $i++) {
     if ( $exifData[$i] -match $tagPattern ) {
@@ -86,8 +87,13 @@ Function ParseTagDateTime {
 
       # If the tag matches the target tag, return the value
       if ($tagName -eq $targetTag) {
-        return (ParseDateTime $tagValue).date
+        $returnData = (ParseDateTime $tagValue).date
       }
     }
+    else {
+      Write-Error "False tag string passed to function"
+    }
   }
+
+  return $returnData
 }
