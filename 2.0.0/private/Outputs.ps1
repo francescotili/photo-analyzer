@@ -89,7 +89,31 @@ function OutputCleanResult {
     }
     Default {}
   }
+}
 
+function OutputRestoreResult {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory = $true)]
+    [String]$Value
+  )
+
+  switch ($Value) {
+    'completed' {
+      Write-Host ""
+      Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
+      Write-Host "       RESTORE COMPLETED       " -BackgroundColor DarkGreen -ForegroundColor White
+      Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
+      (New-Object System.Media.SoundPlayer "$env:windir\Media\Ring06.wav").Play()
+      Write-Host ""
+    }
+    'noFiles' {
+      Write-Host ""
+      Write-Host "   FOUND NO FILES TO RESTORE   " -BackgroundColor DarkRed -ForegroundColor White
+      Write-Host ""
+    }
+    Default {}
+  }
 }
 
 function OutputCheckCreationDate {

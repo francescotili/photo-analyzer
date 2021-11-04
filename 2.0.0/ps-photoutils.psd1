@@ -7,6 +7,7 @@
   PowerShellVersion = "3.0"
   FunctionsToExport = @(
     'PhotoAnalyzer',
-    'CleanBackups'
+    'CleanBackups',
+    'RestoreBackups'
   )
 }

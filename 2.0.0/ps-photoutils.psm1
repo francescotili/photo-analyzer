@@ -31,3 +31,4 @@ $global:Emojis = @{
 # PUBLIC FUNCTIONS
 . $PSScriptRoot\public\PhotoAnalyzerAuto.ps1
 . $PSScriptRoot\public\CleanBackups.ps1
+. $PSScriptRoot\public\RestoreBackups.ps1
