@@ -5,21 +5,12 @@ Function CleanBackups {
     
     .PARAMETER FolderPath
       Optional. The folder to scan and to clean. By default it uses the global path, if present, otherwise it will ask the user.
-    
-    .PARAMETER Mode
-      Optional. Mode of execution, defaults to global mode if not passed (if global is not present, it will simulate):
-      - 'Normal' -> Automatic deletion of all detected file without confirmation
-      - 'Simulation' -> Automatic detection without deletion
-      - 'Manual' -> Automatic detection but ask user for deletion of every file
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $false)]
-    [String]$FolderPath,
-
-    [Parameter(Mandatory = $false)]
-    [String]$Mode
+    [String]$FolderPath
   )
 
   # Analyze and set the WorkingPath
