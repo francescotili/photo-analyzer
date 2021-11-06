@@ -38,6 +38,9 @@ Function Get-ExifInfo {
   elseif ( (ParseTag $exifData "Make") -eq "NIKON CORPORATION") {
     $returnValues.device = [DeviceType]::Nikon
   }
+  elseif ( (ParseTag $exifData "Make") -eq "Microsoft") {
+    $returnValues.device = [DeviceType]::Microsoft
+  }
 
   # Parse filename
   $parsedDate = ParseFilename $File.name
@@ -53,6 +56,7 @@ Function Get-ExifInfo {
   # Retrieve Createdate
   switch ($returnValues.device) {
     ([DeviceType]::Apple) {
+      OutputDevice("Apple")
       switch ($returnValues.fileType) {
         { @("JPEG", "HEIC") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -64,6 +68,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Android) {
+      OutputDevice("Android")
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -75,6 +80,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Canon) {
+      OutputDevice("Canon")
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -86,6 +92,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Nikon) {
+      OutputDevice("Nikon")
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -94,6 +101,17 @@ Function Get-ExifInfo {
           # Not yet a tag detected, fallback to parsedDate with filename
         }
         Default {}
+      }
+    }
+    ([DeviceType]::Microsoft) {
+      OutputDevice("Microsoft")
+      switch ($returnValues.fileType) {
+        { @("JPEG") -contains $_ }{
+          $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
+        }
+        { @("MP4") -contains $_ } {
+          # No correct tag detected, fallback to parsedDate with filename
+        }
       }
     }
     ([DeviceType]::Unknown) {
@@ -139,7 +157,7 @@ Function Get-ExifInfo {
   return $returnValues
 }
 
-enum DeviceType { Apple; Android; Canon; Nikon; Unknown }
+enum DeviceType { Apple; Android; Canon; Nikon; Microsoft; Unknown }
 enum FileType { JPEG; HEIC; PNG; GIF; MOV; MP4; AVI; WMV; Unknown }
 
 Class ExifData {
