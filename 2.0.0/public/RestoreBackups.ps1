@@ -81,6 +81,7 @@ Function RestoreFiles {
       # Renaming file
       Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Restoring $($currentFile.name)" -Status "$Status%"
       ChangeExtension $currentFile.fullFilePath ($currentFile.extension -replace "_original", "")
+      Write-Host ""
     }
     OutputRestoreResult "completed"
   }

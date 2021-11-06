@@ -124,8 +124,8 @@ function OutputCheckCreationDate {
   )
 
   switch ($Value) {
-    'valid' { Write-Host " >> $($Emojis["check"]) Creation date valid" }
-    'undefined' { Write-Host " >> $($Emojis["warning"]) Creation date not detected! Try parsing from filename..." }
+    'valid' { Write-Host " $($Emojis["check"]) Creation date valid" }
+    'undefined' { Write-Host " $($Emojis["warning"]) Creation date not detected! Try parsing from filename..." }
     Default {}
   }
 }
@@ -141,10 +141,10 @@ function OutputCheckFileType {
   )
 
   switch ($Value) {
-    'valid' { Write-Host " >> $($Emojis["check"]) Real .$($Extension) file detected" }
-    'mismatch' { Write-Host " >> $($Emojis["warning"]) Extension mismatch detected ..." }
-    'convert' { Write-Host " >> $($Emojis["warning"]) The file must be converted..." }
-    'unsupported' { Write-Host " >> $($Emojis["ban"]) File extension not supported, skipping..." }
+    'valid' { Write-Host " $($Emojis["check"]) Real .$($Extension) file detected" }
+    'mismatch' { Write-Host " $($Emojis["warning"]) Extension mismatch detected ..." }
+    'convert' { Write-Host " $($Emojis["warning"]) The file must be converted..." }
+    'unsupported' { Write-Host " $($Emojis["ban"]) File extension not supported, skipping..." }
     Default {}
   }
 }
@@ -157,8 +157,8 @@ function OutputParsing {
   )
 
   switch ($Value) {
-    'parsed' { Write-Host " >> $($Emojis["check"]) Valid date successfully parsed" }
-    'nomatch' { Write-Host " >> $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..." }
+    'parsed' { Write-Host " $($Emojis["check"]) Valid date successfully parsed" }
+    'nomatch' { Write-Host " $($Emojis["warning"]) Parsing unsuccessfull! Trying other dates..." }
     Default {}
   }
 }
@@ -181,6 +181,16 @@ function OutputUserError {
   }
 }
 
+function OutputDevice {
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory = $true)]
+    [String]$deviceName
+  )
+
+  Write-Host " $($Emojis["device"]) $($deviceName) device detected"
+}
+
 function OutputRenameResult {
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
@@ -192,8 +202,8 @@ function OutputRenameResult {
   )
 
   switch ($Value) {
-    'extensionChanged' { Write-Host " >> $($Emojis["check"]) File extension changed to .$($String)" }
-    'fileRenamed' { Write-Host " >> File renamed: $($String)" }
+    'extensionChanged' { Write-Host " $($Emojis["check"]) File extension changed to .$($String)" }
+    'fileRenamed' { Write-Host " $($Emojis["check"]) File renamed: $($String)" }
     Default {}
   }
 }
@@ -206,9 +216,9 @@ function OutputConversionResult {
   )
 
   switch ($Value) {
-    'success' { Write-Host " >> $($Emojis["check"]) Conversion completed" }
-    'error' { Write-Host " >> $($Emojis["error"]) Unhandled error during conversion" }
-    'unsupported' { Write-Host " >> $($Emojis["error"]) Unsupported video type" }
+    'success' { Write-Host " $($Emojis["check"]) Conversion completed" }
+    'error' { Write-Host " $($Emojis["error"]) Unhandled error during conversion" }
+    'unsupported' { Write-Host " $($Emojis["ban"]) Unsupported video type" }
     Default {}
   }
 }
