@@ -9,6 +9,7 @@ $global:Emojis = @{
   "pen"       = [System.Char]::ConvertFromUtf32([System.Convert]::toInt32("1F4DD", 16))
   "time"      = [System.Char]::ConvertFromUtf32([System.Convert]::toInt32("1F551", 16))
   "device"    = [System.Char]::ConvertFromUtf32([System.Convert]::toInt32("1F4F1", 16))
+  "question"  = [System.Char]::ConvertFromUtf32([System.Convert]::toInt32("2753", 16))
 }
 [DateTime]$global:DefaultDate = Get-Date -Date "01-01-1800 00:00:00"
 

@@ -13,8 +13,8 @@ Function AutoAnalyzeFiles {
   $FileList | ForEach-Object {
     # Initialize progress bar
     $i = $i + 1
-    $a = 100 * ($i / ($FileNumber + 1))
-    $Status = "{0:N0}" -f $a
+    $a = 100 * (($i - 1) / ($FileNumber))
+    $Status = "{0:N1}" -f $a
 
     # Variables for the file
     $currentFile = @{
@@ -26,7 +26,7 @@ Function AutoAnalyzeFiles {
 
     # Analyze File metadatas
     Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
-    Write-Host $currentFile.fullFilePath -Background Yellow -Foreground Black
+    Write-Host " $($i)/$($FileNumber) | $($Status)% | $($currentFile.name).$($currentFile.extension) " -Background Yellow -Foreground Black
     $exifData = Get-ExifInfo $currentFile
 
     $fileTypeCheck = CheckFileType $currentFile $exifData
@@ -205,25 +205,24 @@ function AlternativeDatesWorkflow {
 
   # Presents option to the user and wait for input
   (New-Object System.Media.SoundPlayer "$env:windir\Media\Windows Unlock.wav").Play()
-  Write-Host ""
-  Write-Host " >> >> What date would you like to use?"
+  OutputAskForInput
 
   if (($exifData.altDates).Count -gt 0) {
     # We have at least one Alternative Date
     for ($i = 1; $i -lt ($exifData.altDates).Count; $i++) {
-      Write-Host "     $($i) | $($Emojis["calendar"]) Alternative date/time     : $($exifData.altDates[$i].toString("yyyy:MM:dd HH:mm:ss"))"
+      Write-Host "  $($i) | $($Emojis["calendar"]) Alternative date/time     : $($exifData.altDates[$i].toString("yyyy:MM:dd HH:mm:ss"))"
       $menu.Add($i, $exifData.altDates[$i])
     }
   }
   if ( $exifData.modifyDate -ne $defaultDate ) {
-      Write-Host "     $($menu.Count + 1) | $($Emojis["calendar"]) File Modified Date/Time   : $($exifData.modifyDate.toString("yyyy:MM:dd HH:mm:ss"))"
+      Write-Host "  $($menu.Count + 1) | $($Emojis["calendar"]) File Modified Date/Time   : $($exifData.modifyDate.toString("yyyy:MM:dd HH:mm:ss"))"
     $menu.Add(($menu.Count + 1), $exifData.modifyDate)
   }
   # TO DO: Add functionality for UTC Offset?
-  Write-Host "     $($menu.Count + 1) | $($Emojis["pen"]) Manually insert date"
+  Write-Host "  $($menu.Count + 1) | $($Emojis["pen"]) Manually insert date"
   $menu.Add(($menu.Count + 1), $defaultDate)
 
-  $userSelection = Read-Host " >> >> Insert number"
+  $userSelection = Read-Host "   Insert number"
   
   # Validate input
   if ( $userSelection -match '^\d+$' ) {
@@ -234,7 +233,7 @@ function AlternativeDatesWorkflow {
         $ReturnValue = $menu.Item($choice)
       }
       else {
-        $UserData = Read-Host " >> >> Insert date (year, month, day, hour, minute, second)"
+        $UserData = Read-Host "   Insert date (year, month, day, hour, minute, second)"
         if ( $userData -ne "" ) {
           if ( IsValidDate $UserData ) {
             # Valid date, parse customData

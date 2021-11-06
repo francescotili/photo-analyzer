@@ -37,6 +37,11 @@ function OutputSpacer {
   for ($i = 0; $i -le 10; $i++) { Write-Host "" }
 }
 
+function OutputAskForInput {
+  Write-Host ""
+  Write-Host " $($Emojis["question"]) What date would you like to use?"
+}
+
 function OutputScriptFooter {
   Write-Host "                               " -BackgroundColor DarkGreen -ForegroundColor White
   Write-Host "     OPERATIONS  COMPLETED     " -BackgroundColor DarkGreen -ForegroundColor White
@@ -171,12 +176,12 @@ function OutputUserError {
   )
 
   switch ($Value) {
-    'invalidChoice' { Write-Host " >> Invalid choice!" }
-    'emptyChoice' { Write-Host " >> No action specified!" }
-    'invalidDate' { Write-Host " >> Invalid date!" }
-    'emptyDate' { Write-Host " >> No date specified!" }
-    'invalidPath' { Write-Error -Message " >> Specified path is not valid! Exiting..." -ErrorAction Stop }
-    'emptyPath' { Write-Error -Message " >> You have not specified a path. Exiting..." -ErrorAction Stop }
+    'invalidChoice' { Write-Host " $($Emojis["error"]) Invalid choice!" }
+    'emptyChoice' { Write-Host " $($Emojis["error"]) No action specified!" }
+    'invalidDate' { Write-Host " $($Emojis["error"]) Invalid date!" }
+    'emptyDate' { Write-Host " $($Emojis["error"]) No date specified!" }
+    'invalidPath' { Write-Error -Message " $($Emojis["error"]) Specified path is not valid! Exiting..." -ErrorAction Stop }
+    'emptyPath' { Write-Error -Message " $($Emojis["error"]) You have not specified a path. Exiting..." -ErrorAction Stop }
     Default {}
   }
 }
