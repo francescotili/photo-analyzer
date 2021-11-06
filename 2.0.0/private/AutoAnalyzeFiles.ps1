@@ -7,7 +7,7 @@ Function AutoAnalyzeFiles {
   $i = 0
   $a = 0
   $Activity = "   ANALYSIS IN PROGRESS ..."
-  $FileList = Get-ChildItem -Path $WorkingFolder
+  $FileList = Get-ChildItem -Path $WorkingFolder -File
   $FileNumber = $FileList.Length
 
   $FileList | ForEach-Object {
