@@ -25,22 +25,23 @@ function ConvertFile {
 
   # Conversion settings
   $conversionSettings = @{
-    "AVI" = @{
-      decomb       = "bob";
-      encoder      = "x264";
-      videoQuality = "22";
-      audioBitrate = "192";
+    "AVI"  = @{
+      converter  = "handbrake";
+      parameters = "-d bob -e x264 -q 22 -B 192"
     }
-    "WMV" = @{
-      decomb       = "bob";
-      encoder      = "x264";
-      videoQuality = "22";
-      audioBitrate = "192";
+    "WMV"  = @{
+      converter  = "handbrake";
+      parameters = "-d bob -e x264 -q 22 -B 192"
+    }
+    "HEIC" = @{
+      converter  = "magick";
+      parameters = ""
     }
   }
   $conversionFormat = @{
-    "AVI" = "mp4"
-    "WMV" = "mp4"
+    "AVI"  = "mp4"
+    "WMV"  = "mp4"
+    "HEIC" = "jpg"
   }
 
   # File details
@@ -57,9 +58,17 @@ function ConvertFile {
       fullFilePath = "$($inputFile.path)\$($inputFile.name).$($conversionFormat[$exifData.fileType])"
     }
 
-    # Convert the file  
-    # 2> $null is to hide HandBrakeCLI useless output
-    HandBrakeCLI -i $inputFile.fullFilePath -o $outputFile.fullFilePath -d $conversionSettings[$exifData.fileType].decomb -e $conversionSettings[$exifData.fileType].encoder -q $conversionSettings[$exifData.fileType].videoQuality -B $conversionSettings[$exifData.fileType].audioBitrate 2> $null
+    # Convert the file
+    switch ($conversionSettings[$exifData.fileType].converter) {
+      "handbrake" {
+        # 2> $null is to hide HandBrakeCLI useless output
+        HandBrakeCLI -i $inputFile.fullFilePath -o $outputFile.fullFilePath $conversionSettings[$exifData.fileType].parameters 2> $null
+      }
+      "magick" {
+        magick $inputFile.fullFilePath $outputFile.fullFilePath 
+      }
+      Default {}
+    }
 
     # Check if file has been created
     if ( Test-Path $outputFile.fullFilePath -PathType Leaf ) {
@@ -79,7 +88,7 @@ function ConvertFile {
           Write-ExifInfo $outputFile ($exifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
           # Rename item
-          RenameFile $outputFile ($exifData.fileName).toString("yyyyMMdd HHmmss")
+          RenameFile $outputFile ($exifData.parsedDate).toString("yyyyMMdd HHmmss")
 
           # Make a backup of input file
           ChangeExtension $inputFile.fullFilePath $backupExtension
