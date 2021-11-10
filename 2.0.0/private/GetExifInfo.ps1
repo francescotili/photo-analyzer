@@ -50,8 +50,17 @@ Function Get-ExifInfo {
   $modifyDate = ParseTagDateTime $exifData "FileModifyDate"
   $returnValues.modifyDate = $modifyDate
 
-  # Retrive utcOffset
+  # Retrieve utcOffset
   $returnValues.utcoffset = (ParseDateTime( ParseTag $exifData "FileModifyDate")).utcoffset
+
+  # Retrieve resolution
+  switch ($returnValues.fileType) {
+    { @("MP4") -contains $_ } {
+      $returnValues.width = [int](ParseTag $exifData "SourceImageWidth")
+      $returnValues.height = [int](ParseTag $exifData "SourceImageHeight")
+    }
+    Default {}
+  }
 
   # Retrieve Createdate
   switch ($returnValues.device) {
@@ -106,7 +115,7 @@ Function Get-ExifInfo {
     ([DeviceType]::Microsoft) {
       OutputDevice("Microsoft")
       switch ($returnValues.fileType) {
-        { @("JPEG") -contains $_ }{
+        { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
         }
         { @("MP4") -contains $_ } {
@@ -168,6 +177,8 @@ Class ExifData {
   [String]$fileType
   [DeviceType]$device
   [String]$utcoffset
+  [Int]$width
+  [Int]$height
 
   ExifData() {
     # Init method
@@ -180,5 +191,7 @@ Class ExifData {
     $this.fileType = ""
     $this.device = [DeviceType]::Unknown
     $this.utcoffset = ""
+    $this.width = 0
+    $this.height = 0
   }
 }

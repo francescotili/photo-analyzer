@@ -26,22 +26,43 @@ function ConvertFile {
   # Conversion settings
   $conversionSettings = @{
     "AVI"  = @{
-      converter  = "handbrake";
-      parameters = "-d bob -e x264 -q 22 -B 192"
+      converter    = "handbrake"
+      decoder      = "bob"
+      container    = "x264"
+      vquality     = "22"
+      aquality     = "192"
+      outputsuffix = ""
     }
     "WMV"  = @{
-      converter  = "handbrake";
-      parameters = "-d bob -e x264 -q 22 -B 192"
+      converter    = "handbrake"
+      decoder      = "bob"
+      container    = "x264"
+      vquality     = "22"
+      aquality     = "192"
+      outputsuffix = ""
+    }
+    "MP4"  = @{
+      converter    = "handbrake"
+      decoder      = "bob"
+      container    = "x265"
+      vquality     = "22"
+      aquality     = "256"
+      outputsuffix = "-H265"
     }
     "HEIC" = @{
-      converter  = "magick";
-      parameters = ""
+      converter    = "magick"
+      decoder      = ""
+      container    = ""
+      vquality     = ""
+      aquality     = ""
+      outputsuffix = ""
     }
   }
   $conversionFormat = @{
     "AVI"  = "mp4"
     "WMV"  = "mp4"
     "HEIC" = "jpg"
+    "MP4"  = "mp4"
   }
 
   # File details
@@ -55,14 +76,22 @@ function ConvertFile {
       path         = $inputFile.path
       name         = $inputFile.name
       extension    = $conversionFormat[$exifData.fileType]
-      fullFilePath = "$($inputFile.path)\$($inputFile.name).$($conversionFormat[$exifData.fileType])"
+      fullFilePath = "$($inputFile.path)\$($inputFile.name)$($conversionSettings[$exifData.fileType].outputsuffix).$($conversionFormat[$exifData.fileType])"
     }
 
     # Convert the file
     switch ($conversionSettings[$exifData.fileType].converter) {
       "handbrake" {
         # 2> $null is to hide HandBrakeCLI useless output
-        HandBrakeCLI -i $inputFile.fullFilePath -o $outputFile.fullFilePath $conversionSettings[$exifData.fileType].parameters 2> $null
+        $argList = @(
+          "-i", $inputFile.fullFilePath,
+          "-o", $outputFile.fullFilePath,
+          "-d", $conversionSettings[$exifData.fileType].decoder,
+          "-e", $conversionSettings[$exifData.fileType].container,
+          "-q", $conversionSettings[$exifData.fileType].vquality,
+          "-B", $conversionSettings[$exifData.fileType].aquality
+        )
+        HandBrakeCLI $argList 2> $null
       }
       "magick" {
         magick $inputFile.fullFilePath $outputFile.fullFilePath 
