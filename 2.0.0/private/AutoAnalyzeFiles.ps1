@@ -163,8 +163,6 @@ Function AutoAnalyzeFiles {
         OutputCheckFileType "convert"
         Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Converting file ..." -Status "$($Status)%"
 
-        # TO DO !!!
-        # Convert file
         ConvertFile $currentFile $exifData
       }
       Default {
