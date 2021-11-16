@@ -34,7 +34,7 @@ Moreover, I hate uppercase extensions, so they will lowercased ☺
 
 ### Video conversion
 
-The writing of `AVI` video files metadata is not supported by `exiftool` (and I suppose it will never be). Though it is an outdated video container, the script will use `HandBrakeCLI` to convert `.avi` video files to MP4.
+The writing of `AVI`, `FLV` and `VMW` video files metadata is not supported by `exiftool` (and I suppose it will never be). Though it is an outdated video container, the script will use `HandBrakeCLI` to convert `.avi`, `.flv` and `.wmv` video files to MP4.
 
 The conversion happen with the best settings and also deinterlace detection and decomb, using the following command:
 
@@ -47,7 +47,7 @@ HandBrakeCLI -i $inputFile -o $outputFile -d bob -e x264 -q 22 -B 192 2> $null
 The script will search and analyze this type of files:
 
 ``` powershell
-$SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "PNG", "gif", "GIF", "mp4", "MP4", "m4v", "M4V", "mov", "MOV", "gif", "GIF", "avi", "AVI")
+$SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "PNG", "gif", "GIF", "mp4", "MP4", "m4v", "M4V", "mov", "MOV", "gif", "GIF", "avi", "AVI", "flv", "FLV")
 ```
 
 ## Requirements
