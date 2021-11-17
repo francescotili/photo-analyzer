@@ -68,8 +68,8 @@ function CleanFiles {
     $CleanupAnalisys | ForEach-Object {
       # Initialize progress bar
       $i = $i + 1
-      $a = 100 * ($i / ($CleanupFiles + 1))
-      $Status = "{0:N0}" -f $Activity
+      $a = 100 * (($i - 1) / $CleanupFiles)
+      $Status = "{0:N1}%" -f $a
 
       # Variables for the file
       $FilePath = $_.FullName
@@ -77,7 +77,7 @@ function CleanFiles {
       $FileName = $GetFileName.fileName
 
       # Deleting file
-      Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Deleting $($FileName)" -Status "$Status%"
+      Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Deleting $($FileName)" -Status "$Status"
       Remove-Item $FilePath
     }
     OutputCleanResult "completed"

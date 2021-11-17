@@ -42,7 +42,7 @@ Function RestoreFiles {
       # Initialize progress bar
       $i = $i + 1
       $a = 100 * ($i / ($RestoreFiles + 1))
-      $Status = "{0:N0}" -f $Activity
+      $Status = "{0:N1}%" -f $a
 
       # Variables for the file
       $currentFile = @{
@@ -51,10 +51,9 @@ Function RestoreFiles {
         name         = (GetFilename( Split-Path -Path $_.FullName -Leaf )).fileName
         extension    = (GetFilename( Split-Path -Path $_.FullName -Leaf )).extension
       }
-      Write-Host $currentFile.fullFilePath -Background Yellow -Foreground Black
 
       # Renaming file
-      Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Restoring $($currentFile.name)" -Status "$Status%"
+      Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Restoring $($currentFile.name)" -Status "$Status"
       ChangeExtension $currentFile.fullFilePath ($currentFile.extension -replace "_original", "")
       Write-Host ""
     }
