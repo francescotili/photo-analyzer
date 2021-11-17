@@ -1,4 +1,3 @@
-$global:WorkingFolder = ""
 $global:Emojis = @{
   "check"     = [System.Char]::ConvertFromUtf32([System.Convert]::toInt32("2705", 16))
   "error"     = [System.Char]::ConvertFromUtf32([System.Convert]::toInt32("1F534", 16))

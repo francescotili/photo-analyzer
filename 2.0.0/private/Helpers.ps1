@@ -4,7 +4,7 @@ function Set-Path {
       This function ask the user for the path to be analyzed and save it as a global variable
   #>
   
-  $Path = Read-Host "Please specify the folder to analyze (i.e.: D:\user\Pictures)"
+  $Path = Read-Host "Please specify the folder to analyze"
   
   if ($Path) {
     # Path has been specified
@@ -15,7 +15,6 @@ function Set-Path {
     }
     else {
       # Valid path
-      Set-Variable -Name WorkingFolder -Value $WorkingPath -Scope Global
       return $WorkingPath
     }
   }

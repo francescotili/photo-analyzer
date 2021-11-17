@@ -2,7 +2,16 @@ Function AutoAnalyzeFiles {
   <#
     .SYNOPSIS
       Completely automated AnalyzeFiles
+    
+    .PARAMETER WorkingFolder
+      The folder to scan and to elaborate.
   #>
+
+  [CmdLetBinding(DefaultParameterSetName)]
+  Param (
+    [Parameter(Mandatory = $true)]
+    [String]$WorkingFolder
+  )
 
   $i = 0
   $a = 0

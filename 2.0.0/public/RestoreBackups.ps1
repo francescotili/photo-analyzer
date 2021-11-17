@@ -7,44 +7,19 @@ Function RestoreBackups {
       Optional. The folder to scan and to clean. By default it uses the global path, if present, otherwise it will ask the user.
   #>
 
-  [CmdletBinding(DefaultParameterSetName)]
-  Param (
-    [Parameter(Mandatory = $false)]
-    [String]$FolderPath
-  )
-
-  # Analyze and set the WorkingPath
-  if ($workingfolder -ne "") {
-    # Global working folder is set
-    $UserChoice = Read-Host " >> Would you like to restore *.*_original backup files? s/n"
-    switch ($UserChoice) {
-      's' {
-        RestoreFiles $workingFolder
-      }
-      'n' {
-        Read-Host " >> Press enter to exit"
-      }
-      Default {
-        # User doesn't want to restore backup files
-        OutputUserError "invalidChoice"
-      }
+  
+  $UserPath = Read-Host " >> Please specify path to analyze and restore"
+  if ($UserPath -ne "") {
+    $UserPath = $UserPath -replace '["]', ''
+    if (Test-Path -Path "$UserPath") {
+      RestoreFiles $UserPath
+    }
+    else {
+      OutputUserError "invalidPath"
     }
   }
   else {
-    # No global specified, ask the user
-    $UserPath = Read-Host " >> Please specify path to analyze and restore"
-    if ($UserPath -ne "") {
-      $UserPath = $UserPath -replace '["]', ''
-      if (Test-Path -Path "$UserPath") {
-        RestoreFiles $UserPath
-      }
-      else {
-        OutputUserError "invalidPath"
-      }
-    }
-    else {
-      OutputUserError "emptyPath"
-    }
+    OutputUserError "emptyPath"
   }
 }
 

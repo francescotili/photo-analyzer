@@ -6,10 +6,11 @@ Function PhotoAnalyzer {
   Write-Host " >> $($Emojis["warning"]) All changes will be written to files!"
 
   # Ask for path
-  Set-Path
+  $WorkingFolder = Set-Path
 
   Clear-Host
   OutputSpacer
-  AutoAnalyzeFiles
+  AutoAnalyzeFiles $WorkingFolder
   OutputScriptFooter
+  CleanBackups $WorkingFolder
 }

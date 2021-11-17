@@ -54,7 +54,6 @@ function OutputScriptFooter {
   Write-Host ""
   Write-Host ""
   Write-Host ""
-  CleanBackups
 }
 
 function OutputFileResult {

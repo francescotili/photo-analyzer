@@ -3,14 +3,14 @@ Function CleanBackups {
     .SYNOPSIS
       Remove the file generated as backup by ExifTool
     
-    .PARAMETER FolderPath
-      Optional. The folder to scan and to clean. By default it uses the global path, if present, otherwise it will ask the user.
+    .PARAMETER WorkingFolder
+      Optional. The folder to scan and to clean. By default it uses the passed path, if present, otherwise it will ask the user.
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
   Param (
     [Parameter(Mandatory = $false)]
-    [String]$FolderPath
+    [String]$WorkingFolder
   )
 
   # Analyze and set the WorkingPath
