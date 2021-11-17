@@ -18,12 +18,36 @@ Function AutoAnalyzeFiles {
   $Activity = "   ANALYZING FOLDER: $(($WorkingFolder.split("\"))[-1])"
   $FileList = Get-ChildItem -Path $WorkingFolder -File
   $FileNumber = $FileList.Count
+  $etaStartTime = Get-Date
 
   $FileList | ForEach-Object {
+    # ETA Calculations
+    $etaOutput = ""
+    $etaNow = Get-Date
+    if ($i -gt 0) {
+      $etaElapsed = $etaNow - $etaStartTime
+      $etaAverage = $etaElapsed.TotalSeconds / $i
+      $etaSecondsLeft = ($FileNumber - $i) * $etaAverage
+      $etaSpan = New-TimeSpan -Seconds $etaSecondsLeft
+      if ($etaSpan.Days -gt 0) {
+        $etaOutput += "$($etaSpan.Days) days "
+      }
+      if ($etaSpan.Hours -gt 0) {
+        $etaOutput += "$($etaSpan.Hours) hours "
+      }
+      if ($etaSpan.Minutes -gt 0) {
+        $etaOutput += "$($etaSpan.Minutes) minutes "
+      }
+      if ($etaSpan.Seconds -gt 0) {
+        $etaOutput += "$($etaSpan.Seconds) seconds "
+      }
+    }
+
     # Initialize progress bar
     $i = $i + 1
     $a = 100 * (($i - 1) / ($FileNumber))
-    $Status = "{0:N1}" -f $a
+    $barStatus = "{0:N1}% - Time remaining: {1}" -f $a,$etaOutput
+    $Status = "{0:N1}%" -f $a
 
     # Variables for the file
     $currentFile = @{
@@ -34,8 +58,8 @@ Function AutoAnalyzeFiles {
     }
 
     # Analyze File metadatas
-    Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($Status)%"
-    Write-Host " $($i)/$($FileNumber) | $($Status)% | $($currentFile.name).$($currentFile.extension) " -Background Yellow -Foreground Black
+    Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Analyzing $($currentFile.name).$($currentFile.extension) ..." -Status "$($barStatus)"
+    Write-Host " $($i)/$($FileNumber) | $($Status) | $($currentFile.name).$($currentFile.extension) " -Background Yellow -Foreground Black
     $exifData = Get-ExifInfo $currentFile
 
     $fileTypeCheck = CheckFileType $currentFile $exifData
@@ -55,7 +79,7 @@ Function AutoAnalyzeFiles {
             OutputParsing "parsed"
 
             # Update metadatas
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
             Write-ExifInfo $currentFile ($exifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
             # Rename item
@@ -67,13 +91,13 @@ Function AutoAnalyzeFiles {
             # No parsing possible
             OutputParsing "nomatch"
 
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$Status%"
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$($barStatus)"
 
             $altDate = AlternativeDatesWorkflow $currentFile $exifData
 
             if ( $altDate -ne $defaultDate ) {
               # Update all dates in the metadata
-              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
               Write-ExifInfo $currentFile $altDate.toString("yyyy:MM:dd HH:mm:ss")
 
               # Rename item
@@ -91,7 +115,7 @@ Function AutoAnalyzeFiles {
           OutputCheckCreationDate "valid"
 
           # Update all dates in the metadata
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
           Write-ExifInfo $currentFile ($exifData.createDate).toString("yyyy:MM:dd HH:mm:ss")
 
           # Rename file
@@ -112,7 +136,7 @@ Function AutoAnalyzeFiles {
         $newFile.fullFilePath = "$($newFile.path)\$($newFile.name).$($newFile.extension)"
 
         # Searching for creation date
-        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading metadata from renamed file ..." -Status "$($Status)%"
+        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Reading metadata from renamed file ..." -Status "$($barStatus)"
         $newExifData = Get-ExifInfo $newFile
 
         if ( $newExifData.createDate -eq $defaultDate) {
@@ -125,7 +149,7 @@ Function AutoAnalyzeFiles {
             OutputParsing "parsed"
 
             # Update metadatas
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
             Write-ExifInfo $newFile ($newExifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
             # Rename item
@@ -136,12 +160,12 @@ Function AutoAnalyzeFiles {
             # No parsing possible
             OutputParsing "nomatch"
 
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$Status%"
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$($barStatus)"
 
             $altDate = AlternativeDatesWorkflow $newFile $exifData
             if ( $altDate -ne $defaultDate ) {
               # Update all dates in the metadata
-              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+              Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
               Write-ExifInfo $newFile $altDate.toString("yyyy:MM:dd HH:mm:ss")
 
               # Rename item
@@ -159,7 +183,7 @@ Function AutoAnalyzeFiles {
           OutputCheckCreationDate "valid"
 
           # Update all dates in the metadata
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
           Write-ExifInfo $newFile ($newExifData.createDate).toString("yyyy:MM:dd HH:mm:ss")
 
           # Rename file
@@ -170,7 +194,7 @@ Function AutoAnalyzeFiles {
       }
       'Convert' {
         OutputCheckFileType "convert"
-        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Converting file ..." -Status "$($Status)%"
+        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Converting file ..." -Status "$($barStatus)"
 
         ConvertFile $currentFile $exifData
       }

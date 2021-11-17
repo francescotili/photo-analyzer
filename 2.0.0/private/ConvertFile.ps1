@@ -113,7 +113,7 @@ function ConvertFile {
           OutputParsing "parsed"
 
           # Update metadatas
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
           Write-ExifInfo $outputFile ($exifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
           # Rename item
@@ -128,13 +128,13 @@ function ConvertFile {
           # No parsing possible
           OutputParsing "nomatch"
 
-          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$Status%"
+          Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Waiting for alternative date ..." -Status "$($barStatus)"
 
           $altDate = AlternativeDatesWorkflow $inputFile $exifData
 
           if ( $altDate -ne $defaultDate ) {
             # Update all dates in the metadata
-            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+            Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
             Write-ExifInfo $outputFile $altDate.toString("yyyy:MM:dd HH:mm:ss")
 
             # Rename item
@@ -157,7 +157,7 @@ function ConvertFile {
         OutputCheckCreationDate "valid"
 
         # Update all dates in the metadata
-        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$Status%"
+        Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
         Write-ExifInfo $outputFile ($exifData.createDate).toString("yyyy:MM:dd HH:mm:ss")
 
         # Rename item
