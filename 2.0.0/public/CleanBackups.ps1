@@ -16,6 +16,8 @@ Function CleanBackups {
   # Analyze and set the WorkingPath
   if ($WorkingFolder -ne "") {
     # Global working folder is set
+    Write-Host " WORKING FOLDER: $(($WorkingFolder.split("\"))[-1]) " -Background Yellow -Foreground Black
+    Write-Host 
     $UserChoice = Read-Host " >> Would you like to delete *.*_original backup files? s/n"
     switch ($UserChoice) {
       's' {

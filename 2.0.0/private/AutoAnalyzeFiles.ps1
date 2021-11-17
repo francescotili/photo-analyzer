@@ -15,7 +15,7 @@ Function AutoAnalyzeFiles {
 
   $i = 0
   $a = 0
-  $Activity = "   ANALYSIS IN PROGRESS ..."
+  $Activity = "   ANALYZING FOLDER: $(($WorkingFolder.split("\"))[-1])"
   $FileList = Get-ChildItem -Path $WorkingFolder -File
   $FileNumber = $FileList.Count
 
