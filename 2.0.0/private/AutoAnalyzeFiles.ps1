@@ -8,7 +8,7 @@ Function AutoAnalyzeFiles {
   $a = 0
   $Activity = "   ANALYSIS IN PROGRESS ..."
   $FileList = Get-ChildItem -Path $WorkingFolder -File
-  $FileNumber = $FileList.Length
+  $FileNumber = $FileList.Count
 
   $FileList | ForEach-Object {
     # Initialize progress bar
