@@ -41,8 +41,11 @@ Function Get-ExifInfo {
   elseif ( (ParseTag $exifData "Make") -eq "Microsoft") {
     $returnValues.device = [DeviceType]::Microsoft
   }
-  elseif ( (ParseTag $exifData "Make") -in @("Samsung", "SAMSUNG TECHWIN")) {
+  elseif ( (ParseTag $exifData "Make") -in @("Samsung", "SAMSUNG TECHWIN", "Samsung Techwin")) {
     $returnValues.device = [DeviceType]::Samsung
+  }
+  elseif ( (ParseTag $exifData "Make") -eq "SONY") {
+    $returnValues.device = [DeviceType]::Sony
   }
 
   # Parse filename
@@ -134,9 +137,17 @@ Function Get-ExifInfo {
         }
       }
     }
+    ([DeviceType]::Sony) {
+      OutputDevice("Sony")
+      switch ($returnValues.fileType) {
+        { @("JPEG", "JPEG (old-style)") -contains $_ } {
+          $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
+        }
+      }
+    }
     ([DeviceType]::Unknown) {
       switch ($returnValues.fileType) {
-        { @("JPEG", "HEIC", "GIF", "AVI", "MP4", "PNG") -contains $_ } {
+        { @("JPEG", "HEIC", "GIF", "AVI", "MP4", "PNG", "JPEG (old-style)") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
         }
         { @("MOV", "WMV") -contains $_ } {
@@ -177,7 +188,7 @@ Function Get-ExifInfo {
   return $returnValues
 }
 
-enum DeviceType { Apple; Android; Canon; Nikon; Microsoft; Samsung; Unknown }
+enum DeviceType { Apple; Android; Canon; Nikon; Microsoft; Samsung; Sony; Unknown }
 
 Class ExifData {
   [DateTime]$createDate
