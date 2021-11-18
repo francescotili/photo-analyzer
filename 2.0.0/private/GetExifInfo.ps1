@@ -41,7 +41,7 @@ Function Get-ExifInfo {
   elseif ( (ParseTag $exifData "Make") -eq "Microsoft") {
     $returnValues.device = [DeviceType]::Microsoft
   }
-  elseif ( (ParseTag $exifData "Make") -eq "Samsung") {
+  elseif ( (ParseTag $exifData "Make") -in @("Samsung", "SAMSUNG TECHWIN")) {
     $returnValues.device = [DeviceType]::Samsung
   }
 
