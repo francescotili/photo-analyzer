@@ -34,6 +34,7 @@ Function CheckFileType {
     "GIF"  = "gif"
     "MOV"  = "mov"
     "MP4"  = "mp4"
+    "M4A"  = "mp4"
   }
 
   # File Types that will be converted
