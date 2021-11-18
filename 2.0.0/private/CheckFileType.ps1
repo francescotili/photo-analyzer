@@ -60,8 +60,10 @@ Function CheckFileType {
       $ReturnValue.action = "Convert"
     }
     else {
-      $ReturnValue.action = "Rename"
-      $ReturnValue.extension = $extensions[$exifData.fileType]
+      if ( $null -ne $extensions[$exifData.fileType] ) {
+        $ReturnValue.action = "Rename"
+        $ReturnValue.extension = $extensions[$exifData.fileType]
+      } 
     }
   }
 
