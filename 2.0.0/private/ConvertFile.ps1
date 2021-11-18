@@ -32,6 +32,7 @@ function ConvertFile {
       vquality     = "22"
       aquality     = "192"
       outputsuffix = ""
+      outputformat = "mp4"
     }
     "WMV"  = @{
       converter    = "handbrake"
@@ -40,6 +41,7 @@ function ConvertFile {
       vquality     = "22"
       aquality     = "192"
       outputsuffix = ""
+      outputformat = "mp4"
     }
     "MP4"  = @{
       converter    = "handbrake"
@@ -48,6 +50,7 @@ function ConvertFile {
       vquality     = "22"
       aquality     = "256"
       outputsuffix = "-H265"
+      outputformat = "mp4"
     }
     "HEIC" = @{
       converter    = "magick"
@@ -56,6 +59,7 @@ function ConvertFile {
       vquality     = ""
       aquality     = ""
       outputsuffix = ""
+      outputformat = "jpg"
     }
     "M4A" = @{
       converter    = "handbrake"
@@ -64,28 +68,22 @@ function ConvertFile {
       vquality     = "22"
       aquality     = "192"
       outputsuffix = "-TEMP"
+      outputformat = "mp4"
     }
-  }
-  $conversionFormat = @{
-    "AVI"  = "mp4"
-    "WMV"  = "mp4"
-    "HEIC" = "jpg"
-    "MP4"  = "mp4"
-    "M4A"  = "mp4"
   }
 
   # File details
   $backupExtension = "$($inputFile.extension)_original"
 
   # Check if extension match and run the conversion
-  if ( $conversionFormat.Contains( $exifData.fileType )) {
+  if ( $conversionSettings.Contains( $exifData.fileType )) {
     # We have a match
     # Define the output file
     $outputFile = @{
       path         = $inputFile.path
       name         = $inputFile.name
-      extension    = $conversionFormat[$exifData.fileType]
-      fullFilePath = "$($inputFile.path)\$($inputFile.name)$($conversionSettings[$exifData.fileType].outputsuffix).$($conversionFormat[$exifData.fileType])"
+      extension    = $conversionSettings[$exifData.fileType].outputformat
+      fullFilePath = "$($inputFile.path)\$($inputFile.name)$($conversionSettings[$exifData.fileType].outputsuffix).$($conversionSettings[$exifData.fileType].outputformat)"
     }
 
     # Convert the file
