@@ -34,11 +34,10 @@ Function CheckFileType {
     "GIF"  = "gif"
     "MOV"  = "mov"
     "MP4"  = "mp4"
-    "M4A"  = "mp4"
   }
 
   # File Types that will be converted
-  $conversions = @("AVI", "WMV", "HEIC", "MP4")
+  $conversions = @("AVI", "WMV", "HEIC", "MP4", "M4A")
 
   # Check if extension match and return value
   if ( $SupportedExtensions.Contains( $inputFile.extension ) ) {

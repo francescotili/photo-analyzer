@@ -57,12 +57,21 @@ function ConvertFile {
       aquality     = ""
       outputsuffix = ""
     }
+    "M4A" = @{
+      converter    = "handbrake"
+      decoder      = "bob"
+      container    = "x264"
+      vquality     = "22"
+      aquality     = "192"
+      outputsuffix = "-TEMP"
+    }
   }
   $conversionFormat = @{
     "AVI"  = "mp4"
     "WMV"  = "mp4"
     "HEIC" = "jpg"
     "MP4"  = "mp4"
+    "M4A"  = "mp4"
   }
 
   # File details
