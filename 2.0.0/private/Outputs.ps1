@@ -192,7 +192,7 @@ function OutputDevice {
     [String]$deviceName
   )
 
-  Write-Host " $($Emojis["device"]) $($deviceName) device detected"
+  Write-Host " $($Emojis["device"]) $($deviceName) detected"
 }
 
 function OutputRenameResult {

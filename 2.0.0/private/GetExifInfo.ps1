@@ -47,6 +47,9 @@ Function Get-ExifInfo {
   elseif ( (ParseTag $exifData "Make") -eq "SONY") {
     $returnValues.device = [DeviceType]::Sony
   }
+  elseif ( $File.name -clike "*WA*" ) {
+    $returnValues.device = [DeviceType]::WhatsApp
+  }
 
   # Parse filename
   $parsedDate = ParseFilename $File.name
@@ -71,7 +74,7 @@ Function Get-ExifInfo {
   # Retrieve Createdate
   switch ($returnValues.device) {
     ([DeviceType]::Apple) {
-      OutputDevice("Apple")
+      OutputDevice("Apple device")
       switch ($returnValues.fileType) {
         { @("JPEG", "HEIC") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -83,7 +86,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Android) {
-      OutputDevice("Android")
+      OutputDevice("Android device")
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -95,7 +98,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Canon) {
-      OutputDevice("Canon")
+      OutputDevice("Canon camera")
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -107,7 +110,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Nikon) {
-      OutputDevice("Nikon")
+      OutputDevice("Nikon camera")
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -119,7 +122,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Microsoft) {
-      OutputDevice("Microsoft")
+      OutputDevice("Microsoft device")
       switch ($returnValues.fileType) {
         { @("JPEG") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
@@ -130,7 +133,7 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Samsung) {
-      OutputDevice("Samsung")
+      OutputDevice("Samsung camera")
       switch ($returnValues.fileType) {
         { @("JPEG", "JPEG (old-style)") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
@@ -138,11 +141,20 @@ Function Get-ExifInfo {
       }
     }
     ([DeviceType]::Sony) {
-      OutputDevice("Sony")
+      OutputDevice("Sony camera")
       switch ($returnValues.fileType) {
         { @("JPEG", "JPEG (old-style)") -contains $_ } {
           $returnValues.createDate = ParseTagDateTime $exifData "DateTimeOriginal"
         }
+      }
+    }
+    ([DeviceType]::WhatsApp) {
+      OutputDevice("Whatsapp photo")
+      switch ($returnValues.fileType) {
+        { @("JPEG", "PNG", "JPEG (old-style)") -contains $_ } {
+          $returnValues.createDate = ParseTagDateTime $exifData "FileModifyDate"
+        }
+        Default {}
       }
     }
     ([DeviceType]::Unknown) {
@@ -188,7 +200,7 @@ Function Get-ExifInfo {
   return $returnValues
 }
 
-enum DeviceType { Apple; Android; Canon; Nikon; Microsoft; Samsung; Sony; Unknown }
+enum DeviceType { Apple; Android; Canon; Nikon; Microsoft; Samsung; Sony; Whatsapp; Unknown }
 
 Class ExifData {
   [DateTime]$createDate
