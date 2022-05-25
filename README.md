@@ -12,7 +12,8 @@ The script utilizes `exiftool` for analyzing the file Metadatas and `HandBrake` 
 
 Basically, the script searches the Original DateTime of the file (normally the date/time where the image or video was taken) in the following ways:
 
-1. First it checks EXIF metadata and searches for standard Date/Time metatag
+1. First it controls file container and file type. It will make conversions if needed (read below)
+2. Then it checks EXIF metadata and searches for standard Date/Time metatag
 2. If standard EXIF metadata is not found, it tries to parse DateTime from filename
 3. If the name of the file is not parsable, then it looks for File Modification date and alternative EXIF tags. In this case, the user must choose which date/time to use or insert manually one.
 
@@ -73,15 +74,33 @@ For additional informations on how to install Powershell Modules, refer to the [
 
 ## Usage
 
-1. Open a Powershell console
-2. Type `PhotoAnalyzerAuto` (it autocompletes) and then press ENTER
-3. Follow onscreen instructions
+The script exposes a couple of functions for you to use in the Terminal.
+
+### PhotoAnalyzer
+
+The `PhotoAnalyzer` command is the main function of the scrip. Use that to execute the analysis of a folder of your choice (it will ask for the complete path).
+
+There are (not yet) any parameters to specify. Simply type `PhotoAnalyzer`, press ENTER and follow on-screen instructions.
+
+### CleanBackups
+
+The script will not modify the original foto and video files. The original files will be only renamed, changing the extension. i.E. the `.jpg` files will be renamed in `.jpg_original`.
+
+The main `PhotoAnalyzer` function will ask the user, at the end, if it wants to clean the backups file (i.E. deleting them). However, it can come handy to have a function specific for only doing these "Clean up".
+
+Simply type `CleanBackups`, press ENTER and follow on-screen instruction to delete all the `*.*_original` files from a specific path.
+
+### RestoreBackups
+
+If something goes wrong or you simply want to restore these `*.*_original` files, you can do that using the `RestoreBackups` function. The function will rename all the files back to the original extensions.
+
+Simply type `RestoreBackups`, press ENTER and follow on-screen instruction to restore all the `*.*_original` files from a specific path. It works best with folders that only contain the files to be restored, to avoid possible conflicts with filenames when the script restores the original files.
 
 ## TODO
 
-* Integrate conversion of `.heic` files into `.jpg` files for better compatibility
-* Study if it is possible to make a logic based on `Maker` of the photo/video files for better metatag handling
-* Integrate conversion of 4K video files from `H264` to `H265` for future proof compatibily and space saving
+* ~~Integrate conversion of `.heic` files into `.jpg` files for better compatibility~~ *done*
+* ~~Study if it is possible to make a logic based on `Maker` of the photo/video files for better metatag handling~~ *done*
+* ~~Integrate conversion of 4K video files from `H264` to `H265` for future proof compatibily and space saving~~ *discarded for compatibility reasons*
 * Implement additional checks on video file to prevent corruption, metatag mismatch (useful for Plex)
 * Restore a partially and a fully manual mode
 * Publish the script on Powershell Gallery
