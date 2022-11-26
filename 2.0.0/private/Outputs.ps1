@@ -146,7 +146,7 @@ function OutputCheckFileType {
 
   switch ($Value) {
     'valid' { Write-Host " $($Emojis["check"]) Real .$($Extension) file detected" }
-    'mismatch' { Write-Host " $($Emojis["warning"]) Extension mismatch detected ..." }
+    'mismatch' { Write-Host " $($Emojis["warning"]) Extension mismatch detected..." }
     'convert' { Write-Host " $($Emojis["warning"]) The file must be converted..." }
     'unsupported' { Write-Host " $($Emojis["ban"]) File extension or container not supported" }
     Default {}
