@@ -80,7 +80,7 @@ Function Get-ExifInfo {
           $returnValues.createDate = ParseTagDateTime $exifData "CreateDate"
         }
         { @("MOV") -contains $_ } {
-          $returnValues.createDate = ParseTagDateTime $exifData "CreationDate"
+          $returnValues.createDate = ParseTagDateTime $exifData "MediaCreateDate"
         }
         Default {}
       }
