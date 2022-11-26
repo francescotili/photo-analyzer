@@ -14,7 +14,7 @@ Function ParseDateTime {
     [String]$Tag
   )
 
-  $datePattern = "(19|20\d{2})(?:[_.-:])?(0[1-9]|1[0-2])(?:[_.-:])?([0-2]\d|3[0-1]).*([0-1][0-9]|2[0-3])(?:[_.-:])?([0-5][0-9])(?:[_.-:])?([0-5][0-9])([+-])?([0-1][0-9]|2[0-4])?(?:[_.-:])?([0-5][0-9])?"
+  $datePattern = "(19\d{2}|20\d{2})(?:[_.-:])?(0[1-9]|1[0-2])(?:[_.-:])?(0[1-9]|[1-2][0-9]|3[0-1]).*([0-1][0-9]|2[0-3])(?:[_.-:])?([0-5][0-9])(?:[_.-:])?([0-5][0-9])([+-])?([0-1][0-9]|2[0-4])?(?:[_.-:])?([0-5][0-9])?"
 
   # Check if TagValue is a validDate
   if ( $Tag -match $datePattern ) {
@@ -30,7 +30,7 @@ Function ParseDateTime {
       -minute $dateMatches.Groups[5].Value `
       -second $dateMatches.Groups[6].Value
     
-    if ($dateMatches.Groups[8].Value -ne "") {
+    if ($dateMatches.Groups[7].Value -ne "" -And $dateMatches.Groups[8].Value -ne "" -And $dateMatches.Groups[9].Value -ne "") {
       $utcOffset = "$($dateMatches.Groups[7].Value)$($dateMatches.Groups[8].Value):$($dateMatches.Groups[9].Value)"
     }
     else {
