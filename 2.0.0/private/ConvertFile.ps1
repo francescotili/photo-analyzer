@@ -61,7 +61,7 @@ function ConvertFile {
       outputsuffix = ""
       outputformat = "jpg"
     }
-    "M4A" = @{
+    "M4A"  = @{
       converter    = "handbrake"
       decoder      = "bob"
       container    = "x264"

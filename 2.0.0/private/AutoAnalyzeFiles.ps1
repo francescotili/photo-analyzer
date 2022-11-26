@@ -46,7 +46,7 @@ Function AutoAnalyzeFiles {
     # Initialize progress bar
     $i = $i + 1
     $a = 100 * (($i - 1) / ($FileNumber))
-    $barStatus = "{0:N1}% - Time remaining: {1}" -f $a,$etaOutput
+    $barStatus = "{0:N1}% - Time remaining: {1}" -f $a, $etaOutput
     $Status = "{0:N1}%" -f $a
 
     # Variables for the file
@@ -246,7 +246,7 @@ function AlternativeDatesWorkflow {
     }
   }
   if ( $exifData.modifyDate -ne $defaultDate ) {
-      Write-Host "  $($menu.Count + 1) | $($Emojis["calendar"]) File Modified Date/Time   : $($exifData.modifyDate.toString("yyyy:MM:dd HH:mm:ss"))"
+    Write-Host "  $($menu.Count + 1) | $($Emojis["calendar"]) File Modified Date/Time   : $($exifData.modifyDate.toString("yyyy:MM:dd HH:mm:ss"))"
     $menu.Add(($menu.Count + 1), $exifData.modifyDate)
   }
   # TO DO: Add functionality for UTC Offset?

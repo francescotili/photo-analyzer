@@ -24,12 +24,12 @@ Function ParseFilename {
 
     # Identify the capture groups
     $returnDate = Get-Date `
-    -Year $regMatches.Groups[1].Value `
-    -Month $regMatches.Groups[2].Value `
-    -Day $regMatches.Groups[3].Value `
-    -Hour $regMatches.Groups[4].Value `
-    -Minute $regMatches.Groups[5].Value `
-    -Second $regMatches.Groups[6].Value
+      -Year $regMatches.Groups[1].Value `
+      -Month $regMatches.Groups[2].Value `
+      -Day $regMatches.Groups[3].Value `
+      -Hour $regMatches.Groups[4].Value `
+      -Minute $regMatches.Groups[5].Value `
+      -Second $regMatches.Groups[6].Value
 
     return $returnDate
   }
