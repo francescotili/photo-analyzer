@@ -181,6 +181,8 @@ function OutputUserError {
     'emptyDate' { Write-Host " $($Emojis["error"]) No date specified!" }
     'invalidPath' { Write-Error -Message " $($Emojis["error"]) Specified path is not valid! Exiting..." -ErrorAction Stop }
     'emptyPath' { Write-Error -Message " $($Emojis["error"]) You have not specified a path. Exiting..." -ErrorAction Stop }
+    'invalidOffset' { Write-Error -Message " $($Emojis["error"]) Specified offset is not valid! Exiting..." -ErrorAction Stop }
+    'emptyOffset' { Write-Error -Message " $($Emojis["error"]) You have not specified an offset. Exiting..." -ErrorAction Stop }
     Default {}
   }
 }

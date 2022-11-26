@@ -8,6 +8,7 @@
   FunctionsToExport = @(
     'PhotoAnalyzer',
     'CleanBackups',
-    'RestoreBackups'
+    'RestoreBackups',
+    'PhotoAnalyzerOffset'
   )
 }
