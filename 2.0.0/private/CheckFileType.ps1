@@ -32,29 +32,27 @@ Function CheckFileType {
     "JPEG" = "jpg"
     "PNG"  = "png"
     "GIF"  = "gif"
-    "MOV"  = "mov"
     "MP4"  = "mp4"
   }
 
   # File Types that will be converted
-  $conversions = @("AVI", "WMV", "HEIC", "MP4", "M4A")
+  $conversions = @("AVI", "WMV", "HEIC", "MP4", "M4A", "MOV")
 
   # Check if extension match and return value
   if ( $SupportedExtensions.Contains( $inputFile.extension ) ) {
     # Check if the extension is the expected based on the FileType
     if ( $extensions[$exifData.fileType] -ceq $inputFile.extension ) {
-      # If resoulution exists and is over FullHD, change to H265 container
-      if (( $exifData.width -ne 0) -and ($exifData.height -ne 0)) {
-        if (( $exifData.width -gt 1920 ) -and ($exifData.height -gt 1080)) {
-          $ReturnValue.action = "Convert"
-        }
-        else {
-          $ReturnValue.action = "IsValid"
-        }
+      <# For mp4 video, I found that it is better to always reencode to solve all
+       # the container issues of various device. It will generate a standard H264
+       # video in .mp4 format that usually works everytime, with every player.
+       # Clearly it is more "energy intensive", but it ensures repeatability
+       #
+       # As example: H264 4K videos from Realme devices, do not play well on PC
+       #             even if it normal H264 video. If reencoded, all good though #>
+      if ( $extensions[$exifData.fileType] -ceq "MP4" ) {
+        $ReturnValue.action = "Convert"
       }
-      else {
-        $ReturnValue.action = "IsValid"
-      }
+      else { $ReturnValue.action = "IsValid" }
     }
     elseif ( $conversions.Contains($exifData.fileType)) {
       $ReturnValue.action = "Convert"

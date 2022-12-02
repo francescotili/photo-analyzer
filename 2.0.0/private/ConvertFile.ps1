@@ -46,10 +46,10 @@ function ConvertFile {
     "MP4"  = @{
       converter    = "handbrake"
       decoder      = "bob"
-      container    = "x265"
+      container    = "x264"
       vquality     = "22"
       aquality     = "256"
-      outputsuffix = "-H265"
+      outputsuffix = "-H264"
       outputformat = "mp4"
     }
     "HEIC" = @{
@@ -66,8 +66,17 @@ function ConvertFile {
       decoder      = "bob"
       container    = "x264"
       vquality     = "22"
-      aquality     = "192"
+      aquality     = "256"
       outputsuffix = "-TEMP"
+      outputformat = "mp4"
+    }
+    "MOV"  = @{
+      converter    = "handbrake"
+      decoder      = "bob"
+      container    = "x264"
+      vquality     = "22"
+      aquality     = "256"
+      outputsuffix = "-H264"
       outputformat = "mp4"
     }
   }
