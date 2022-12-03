@@ -6,7 +6,7 @@ Function Write-ExifInfo {
     .EXAMPLE
       Write-ExifInfo $filePath $date
     
-    .PARAMETER File
+    .PARAMETER inputFile
       Required. The complete file path on which the date needs to be written
     
     .PARAMETER Date
