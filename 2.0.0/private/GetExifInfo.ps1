@@ -1,13 +1,16 @@
 Function Get-ExifInfo {
   <#
     .SYNOPSIS
-      Get the specified Exif information from the specified file based on filetype.
+      Get all the EXIF information from the specified file based on filetype.
     
     .EXAMPLE
-      Get-ExifInfo $file FileType
+      Get-ExifInfo $file
     
     .PARAMETER File
       Required. Complete file object to analyze.
+    
+    .RETURNS
+      An ExifData object with various EXIF information
   #>
 
   [CmdLetBinding(DefaultParameterSetName)]
