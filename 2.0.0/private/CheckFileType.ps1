@@ -49,7 +49,7 @@ Function CheckFileType {
        #
        # As example: H264 4K videos from Realme devices, do not play well on PC
        #             even if it normal H264 video. If reencoded, all good though #>
-      if ( $extensions[$exifData.fileType] -ceq "MP4" ) {
+      if ( $extensions[$exifData.fileType] -ceq "mp4" ) {
         $ReturnValue.action = "Convert"
       }
       else { $ReturnValue.action = "IsValid" }
