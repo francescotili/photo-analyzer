@@ -132,11 +132,11 @@ function ConvertFile {
           Write-Progress -Activity $Activity -PercentComplete $a -CurrentOperation "Writing metadata ..." -Status "$($barStatus)"
           Write-ExifInfo $outputFile ($exifData.parsedDate).toString("yyyy:MM:dd HH:mm:ss")
 
-          # Rename item
-          RenameFile $outputFile ($exifData.parsedDate).toString("yyyyMMdd HHmmss")
-
           # Make a backup of input file
           ChangeExtension $inputFile.fullFilePath $backupExtension
+
+          # Rename item
+          RenameFile $outputFile ($exifData.parsedDate).toString("yyyyMMdd HHmmss")
           OutputFileResult "success"
           Write-Host ""
         }
