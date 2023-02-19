@@ -53,8 +53,9 @@ $SupportedExtensions = @("jpg", "JPG", "jpeg", "JPEG", "heic", "HEIC", "png", "P
 
 ## Requirements
 
-- `exiftool.exe` copied in one of PATH folder of Windows
-- `HandBrakeCLI.exe` copied in one of PATH folder of Windows
+- `exiftool.exe` copied in one of PATH folder of Windows • [ExifTool Official Site](https://exiftool.org/)
+- `HandBrakeCLI.exe` copied in one of PATH folder of Windows • [HandBrake Official Site](https://handbrake.fr/)
+- `magick.exe` copied in one of PATH folder of Windows • [Image Magick Official Site](https://imagemagick.org/index.php)
 
 ## Installation
 
